@@ -1,16 +1,13 @@
-namespace SpriteKind {
-    export const CampaignMode = SpriteKind.create()
-    export const TowerMode = SpriteKind.create()
-    export const Icon = SpriteKind.create()
-}
-
-function close_tower_mode() {
-    
-}
-
-function open_choose_mode() {
-    
-    scene.setBackgroundImage(img`
+@namespace
+class SpriteKind:
+    CampaignMode = SpriteKind.create()
+    TowerMode = SpriteKind.create()
+    Icon = SpriteKind.create()
+def close_tower_mode():
+    pass
+def open_choose_mode():
+    global mode_a, mode_b, cursor, on_choose_mode
+    scene.set_background_image(img("""
         7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
                 7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
                 7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
@@ -131,8 +128,8 @@ function open_choose_mode() {
                 7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
                 7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
                 7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-    `)
-    mode_a = sprites.create(img`
+    """))
+    mode_a = sprites.create(img("""
             . . . . . . c c . . . . . . . . 
                     . . . . . . c c c . . . . . . . 
                     . . . . . c c . c . . . . . . . 
@@ -149,9 +146,10 @@ function open_choose_mode() {
                     . c . . . . . . . . . . . c c . 
                     . c . . . . . . . . . . . . c . 
                     c . . . . . . . . . . . . . c c
-        `, SpriteKind.CampaignMode)
-    mode_a.setPosition(20, 62)
-    mode_b = sprites.create(img`
+        """),
+        SpriteKind.CampaignMode)
+    mode_a.set_position(20, 62)
+    mode_b = sprites.create(img("""
             . . . . 3 3 3 3 3 . . . . . . . 
                     . . . . 3 . . . 3 3 . . . . . . 
                     . . . . 3 . . . . 3 3 . . . . . 
@@ -168,9 +166,10 @@ function open_choose_mode() {
                     . . . . 3 . . . . . . . . 3 . . 
                     . . . . 3 . . . . . . . . 3 . . 
                     . . . . 3 3 3 3 3 3 3 3 3 . . .
-        `, SpriteKind.TowerMode)
-    mode_b.setPosition(119, 59)
-    cursor = sprites.create(img`
+        """),
+        SpriteKind.TowerMode)
+    mode_b.set_position(119, 59)
+    cursor = sprites.create(img("""
             . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . f f . . . . . . . . . . . . 
@@ -187,24 +186,21 @@ function open_choose_mode() {
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . .
-        `, SpriteKind.Player)
-    cursor.setPosition(76, 63)
-    on_choose_mode = true
-}
-
-function close_main_screen() {
-    
-    music.stopAllSounds()
+        """),
+        SpriteKind.player)
+    cursor.set_position(76, 63)
+    on_choose_mode = True
+def close_main_screen():
+    global on_main_screen
+    music.stop_all_sounds()
     sprites.destroy(text_sprite)
     sprites.destroy(title_sprite)
     sprites.destroy(settings_sprite)
     sprites.destroy(letter_b)
-    on_main_screen = false
-}
-
-function settings_icon() {
-    
-    settings_sprite = sprites.create(img`
+    on_main_screen = False
+def settings_icon():
+    global settings_sprite, letter_b
+    settings_sprite = sprites.create(img("""
             . . . . . . . b b . . . . . . . 
                     . . . . . . b d d b . . . . . . 
                     . . . . . b d 5 5 d b . . . . . 
@@ -221,74 +217,59 @@ function settings_icon() {
                     . . c 5 d b c c c c b d 5 c . . 
                     . . c c c c . . . . c c c c . . 
                     . . . . . . . . . . . . . . . .
-        `, SpriteKind.Icon)
-    settings_sprite.setPosition(141, 12)
+        """),
+        SpriteKind.Icon)
+    settings_sprite.set_position(141, 12)
     letter_b = textsprite.create("B")
-    letter_b.setPosition(141, 11)
-    letter_b.setMaxFontHeight(8)
-    letter_b.setOutline(1, 15)
-}
+    letter_b.set_position(141, 11)
+    letter_b.set_max_font_height(8)
+    letter_b.set_outline(1, 15)
 
-controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
+def on_b_pressed():
     close_main_screen()
     open_settings_menu()
-})
-function open_tower_mode() {
-    
-}
+controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
-controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
-    if (on_main_screen == true) {
+def open_tower_mode():
+    pass
+
+def on_a_pressed():
+    if on_main_screen == True:
         close_main_screen()
         open_choose_mode()
-    } else {
-        
-    }
-    
-})
-function open_level_map() {
-    
-}
+    else:
+        pass
+controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
-function game_title() {
-    
+def open_level_map():
+    pass
+def game_title():
+    global title_sprite
     title_sprite = textsprite.create("My Game")
-    title_sprite.setMaxFontHeight(15)
-    title_sprite.setOutline(1, 15)
-    title_sprite.setPosition(82, 43)
-}
-
-function bottom_text() {
-    
+    title_sprite.set_max_font_height(15)
+    title_sprite.set_outline(1, 15)
+    title_sprite.set_position(82, 43)
+def bottom_text():
+    global text_sprite
     text_sprite = textsprite.create("Press A to start the game")
-    text_sprite.setOutline(0.2, 1)
-    text_sprite.setPosition(80, 110)
-}
-
-function close_settings_menu() {
-    
-    on_settings_menu = false
-}
-
-function confirm_before_proceeding(msg: string) {
+    text_sprite.set_outline(0.2, 1)
+    text_sprite.set_position(80, 110)
+def close_settings_menu():
+    global on_settings_menu
+    on_settings_menu = False
+def confirm_before_proceeding(msg: str):
     game.splash(msg)
-}
-
-function close_level_map() {
-    
-}
-
-function close_choose_mode() {
-    
+def close_level_map():
+    pass
+def close_choose_mode():
+    global on_choose_mode
     sprites.destroy(mode_a)
     sprites.destroy(mode_b)
     sprites.destroy(cursor)
-    on_choose_mode = false
-}
-
-function open_main_screen() {
-    
-    scene.setBackgroundImage(img`
+    on_choose_mode = False
+def open_main_screen():
+    global on_main_screen
+    scene.set_background_image(img("""
         ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
                 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
                 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -409,19 +390,18 @@ function open_main_screen() {
                 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
                 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
                 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-    `)
-    music.play(music.createSong(hex`
+    """))
+    music.play(music.create_song(hex("""
             00780004080200
-        `), music.PlaybackMode.InBackground)
+        """)),
+        music.PlaybackMode.IN_BACKGROUND)
     game_title()
     bottom_text()
     settings_icon()
-    on_main_screen = true
-}
-
-function open_settings_menu() {
-    
-    scene.setBackgroundImage(img`
+    on_main_screen = True
+def open_settings_menu():
+    global on_choose_mode
+    scene.set_background_image(img("""
         8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888b888886888888588888888888888b8888888888888
                 8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888b888886888888588888888888888b8888888888888
                 8888888888888888888888888888888888688888888888b88888888888888888888888888888888888888888888888888888888888888888888888b888888688888588888888888888b8888888888888
@@ -542,21 +522,19 @@ function open_settings_menu() {
                 8888888888888555888888888888888888888888888888855555888888888888888888888888888888888888888888888888888888888888888888888885888888888888888888555855588888888888
                 8888888888855555558888888888888888888888888888855855888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888558885588885888888
                 8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
-    `)
-    on_choose_mode = true
-}
-
-let letter_b : TextSprite = null
-let settings_sprite : Sprite = null
-let title_sprite : TextSprite = null
-let text_sprite : TextSprite = null
-let cursor : Sprite = null
-let mode_b : Sprite = null
-let mode_a : Sprite = null
-let on_choose_mode = false
-let on_settings_menu = false
-let on_main_screen = false
-on_main_screen = true
-on_settings_menu = false
-on_choose_mode = false
+    """))
+    on_choose_mode = True
+letter_b: TextSprite = None
+settings_sprite: Sprite = None
+title_sprite: TextSprite = None
+text_sprite: TextSprite = None
+cursor: Sprite = None
+mode_b: Sprite = None
+mode_a: Sprite = None
+on_choose_mode = False
+on_settings_menu = False
+on_main_screen = False
+on_main_screen = True
+on_settings_menu = False
+on_choose_mode = False
 open_main_screen()
