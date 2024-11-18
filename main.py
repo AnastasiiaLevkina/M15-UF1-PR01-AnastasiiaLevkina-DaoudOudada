@@ -376,7 +376,6 @@ def open_choose_mode():
         
     cursor.set_position(76, 63)
     on_choose_mode = True
-    choose_campaign_mode = True
     set_cursor_facing_left()
     exit_icon()
 
@@ -734,7 +733,7 @@ on_choose_mode = False
 on_settings_menu = False
 on_settings_menu = False
 on_choose_mode = False
-choose_campaign_mode = False
+choose_campaign_mode = True
 choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False

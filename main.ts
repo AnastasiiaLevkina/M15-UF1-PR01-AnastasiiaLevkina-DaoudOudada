@@ -378,7 +378,6 @@ function open_choose_mode() {
         `, SpriteKind.Player)
     cursor.setPosition(76, 63)
     on_choose_mode = true
-    choose_campaign_mode = true
     set_cursor_facing_left()
     exit_icon()
 }
@@ -759,7 +758,7 @@ let on_choose_mode = false
 let on_settings_menu = false
 on_settings_menu = false
 on_choose_mode = false
-let choose_campaign_mode = false
+let choose_campaign_mode = true
 let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
