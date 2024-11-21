@@ -5,6 +5,103 @@ namespace SpriteKind {
     export const Container = SpriteKind.create()
 }
 
+class Level {
+    static level_number: number
+    private ___level_number_is_set: boolean
+    private ___level_number: number
+    get level_number(): number {
+        return this.___level_number_is_set ? this.___level_number : Level.level_number
+    }
+    set level_number(value: number) {
+        this.___level_number_is_set = true
+        this.___level_number = value
+    }
+    
+    static enemy_appearance_order: number[][]
+    private ___enemy_appearance_order_is_set: boolean
+    private ___enemy_appearance_order: number[][]
+    get enemy_appearance_order(): number[][] {
+        return this.___enemy_appearance_order_is_set ? this.___enemy_appearance_order : Level.enemy_appearance_order
+    }
+    set enemy_appearance_order(value: number[][]) {
+        this.___enemy_appearance_order_is_set = true
+        this.___enemy_appearance_order = value
+    }
+    
+    static level_passed: boolean
+    private ___level_passed_is_set: boolean
+    private ___level_passed: boolean
+    get level_passed(): boolean {
+        return this.___level_passed_is_set ? this.___level_passed : Level.level_passed
+    }
+    set level_passed(value: boolean) {
+        this.___level_passed_is_set = true
+        this.___level_passed = value
+    }
+    
+    static level_opened: boolean
+    private ___level_opened_is_set: boolean
+    private ___level_opened: boolean
+    get level_opened(): boolean {
+        return this.___level_opened_is_set ? this.___level_opened : Level.level_opened
+    }
+    set level_opened(value: boolean) {
+        this.___level_opened_is_set = true
+        this.___level_opened = value
+    }
+    
+    static stars: number
+    private ___stars_is_set: boolean
+    private ___stars: number
+    get stars(): number {
+        return this.___stars_is_set ? this.___stars : Level.stars
+    }
+    set stars(value: number) {
+        this.___stars_is_set = true
+        this.___stars = value
+    }
+    
+    static scene_background_img: string
+    private ___scene_background_img_is_set: boolean
+    private ___scene_background_img: string
+    get scene_background_img(): string {
+        return this.___scene_background_img_is_set ? this.___scene_background_img : Level.scene_background_img
+    }
+    set scene_background_img(value: string) {
+        this.___scene_background_img_is_set = true
+        this.___scene_background_img = value
+    }
+    
+    static level_music: string
+    private ___level_music_is_set: boolean
+    private ___level_music: string
+    get level_music(): string {
+        return this.___level_music_is_set ? this.___level_music : Level.level_music
+    }
+    set level_music(value: string) {
+        this.___level_music_is_set = true
+        this.___level_music = value
+    }
+    
+    public static __initLevel() {
+        Level.level_number = 0
+        //  Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
+        Level.enemy_appearance_order = [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]]
+        Level.level_passed = false
+        Level.level_opened = false
+        Level.stars = 0
+        Level.scene_background_img = ""
+        Level.level_music = ""
+    }
+    
+    constructor() {
+        
+    }
+    
+}
+
+Level.__initLevel()
+
 // Controls
 controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
     if (on_main_screen == true) {
@@ -13,6 +110,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
     } else if (on_settings_menu == true) {
         
     } else if (on_choose_mode) {
+        close_choose_mode()
         if (choose_campaign_mode) {
             open_level_map()
         } else {
@@ -32,6 +130,14 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
     } else if (on_choose_mode == true) {
         close_choose_mode()
         open_main_screen()
+    } else if (player_stats_menu_opened == true) {
+        close_player_stats_menu()
+        if (choose_campaign_mode) {
+            
+        } else {
+            open_choose_mode()
+        }
+        
     }
     
 })
@@ -754,6 +860,8 @@ function destroy_settings_icon() {
 function open_player_stats_menu() {
     
     
+    
+    
     // Containers
     stats_main_container_sprite = sprites.create(img`
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -937,7 +1045,22 @@ function open_player_stats_menu() {
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.setPosition(37, 50)
     scaling.scaleByPercent(stats_player_container_sprite, -10, ScaleDirection.Uniformly, ScaleAnchor.Middle)
-    player_sprite.setPosition(37, 50)
+    // Create_player
+    create_witch_sprite()
+    create_player()
+    player_sprite.setPosition(37, 52)
+    player_stats_menu_opened = true
+}
+
+function close_player_stats_menu() {
+    
+    
+    
+    sprites.destroy(stats_main_container_sprite)
+    sprites.destroy(stats_header_sprite)
+    sprites.destroy(stats_player_container_sprite)
+    sprites.destroy(player_sprite)
+    player_stats_menu_opened = false
 }
 
 //  Functions
@@ -987,6 +1110,12 @@ function next_level() {
 }
 
 // Characters
+function create_player() {
+    
+    player_sprite = witch_sprite
+    player_sprite.z = 5
+}
+
 function create_knight_sprite() {
     
     knight_sprite = sprites.create(img`
@@ -1064,12 +1193,6 @@ function create_thieve_sprite() {
         `, SpriteKind.Player)
 }
 
-function create_player() {
-    
-    player_sprite = witch_sprite
-    player_sprite.z = 5
-}
-
 function create_witch_sprite() {
     
     witch_sprite = sprites.create(assets.image`
@@ -1094,6 +1217,7 @@ let cursor : Sprite = null
 let mode_b : Sprite = null
 let mode_a : Sprite = null
 //  Player stats
+let player_char_name = ""
 let player_hp = 0
 let player_power = 0
 let player_talent = 0
@@ -1104,18 +1228,23 @@ let player_exp_required = 0
 let player_coins = 0
 let player_points = 0
 // # Player stats menu sprites
-let stats_main_container_sprite = null
-let stats_header_sprite = null
-let stats_player_container_sprite = null
-let stats_player_stats_container_sprite = null
-let stats_player_name_sprite = null
-let stats_player_level_sprite = null
-let stats_player_points_sprite = null
-let stats_player_coins_sprite = null
-let stats_player_hp_sprite = null
-let stats_player_power_sprite = null
-let stats_player_talent_sprite = null
-let stats_player_luck_sprite = null
+let stats_main_container_sprite : Sprite = null
+let stats_header_sprite : Sprite = null
+let stats_player_container_sprite : Sprite = null
+let stats_player_stats_container_sprite : Sprite = null
+let stats_player_name_sprite : Sprite = null
+let stats_player_level_sprite : Sprite = null
+let stats_player_exp_bar_sprite : Sprite = null
+let stats_player_points_sprite : Sprite = null
+let stats_player_coins_sprite : Sprite = null
+let stats_player_hp_sprite : Sprite = null
+let stats_player_power_sprite : Sprite = null
+let stats_player_talent_sprite : Sprite = null
+let stats_player_luck_sprite : Sprite = null
+//  Level variables
+let levels = []
+let last_level_number = 0
+let current_level_number = 0
 //  Booleans
 let on_main_screen = true
 let on_choose_mode = false
@@ -1126,8 +1255,7 @@ let choose_campaign_mode = true
 let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
+let player_stats_menu_opened = false
 //  On start
 init_player_stats()
-create_witch_sprite()
-create_player()
 open_main_screen()

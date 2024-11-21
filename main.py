@@ -5,6 +5,20 @@ class SpriteKind:
     Icon = SpriteKind.create()
     Container = SpriteKind.create()
 
+class Level():
+    level_number = 0
+    # Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
+    enemy_appearance_order = [
+        [1, 100], [1, 50], [1, 0], [1, 0], [1, 100]
+    ]
+    level_passed = False
+    level_opened = False
+    stars = 0
+    scene_background_img = ""
+    level_music = ""
+    def __init__():
+        pass
+
 #Controls
 def on_a_pressed():
     if on_main_screen == True:
@@ -13,6 +27,7 @@ def on_a_pressed():
     elif on_settings_menu == True:
         pass
     elif on_choose_mode:
+        close_choose_mode()
         if choose_campaign_mode:
             open_level_map()
         else:
@@ -30,6 +45,12 @@ def on_b_pressed():
     elif on_choose_mode == True:
         close_choose_mode()
         open_main_screen()
+    elif player_stats_menu_opened == True:
+        close_player_stats_menu()
+        if (choose_campaign_mode):
+            pass
+        else:
+            open_choose_mode()
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
 def on_left_pressed():
@@ -737,7 +758,9 @@ def destroy_settings_icon():
 
 def open_player_stats_menu():
     global stats_main_container_sprite, stats_header_sprite, stats_player_container_sprite, stats_player_stats_container_sprite
+    global stats_player_name_sprite, stats_player_coins_sprite, stats_player_exp_bar_sprite
     global player_sprite
+    global player_stats_menu_opened
     #Containers
     stats_main_container_sprite = sprites.create(img("""
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -926,8 +949,25 @@ def open_player_stats_menu():
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.set_position(37, 50)
     scaling.scale_by_percent(stats_player_container_sprite, -10, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
-    player_sprite.set_position(37, 50)
+    
+    #Create_player
+    create_witch_sprite()
+    create_player()
+    player_sprite.set_position(37, 52)
 
+    player_stats_menu_opened = True
+
+def close_player_stats_menu():
+    global stats_main_container_sprite, stats_header_sprite, stats_player_container_sprite, stats_player_stats_container_sprite
+    global player_sprite
+    global player_stats_menu_opened
+    
+    sprites.destroy(stats_main_container_sprite)
+    sprites.destroy(stats_header_sprite)
+    sprites.destroy(stats_player_container_sprite)
+    sprites.destroy(player_sprite)
+
+    player_stats_menu_opened = False
 
     
 # Functions
@@ -970,6 +1010,12 @@ def next_level():
     
     
 #Characters
+def create_player():
+    global player_sprite, witch_sprite, player_char_name
+    player_sprite = witch_sprite
+
+    player_sprite.z = 5
+
 def create_knight_sprite():
     global knight_sprite
     knight_sprite = sprites.create(img("""
@@ -1047,11 +1093,6 @@ def create_thieve_sprite():
         """),
         SpriteKind.player)
 
-def create_player():
-    global player_sprite, witch_sprite
-    player_sprite = witch_sprite
-    player_sprite.z = 5
-
 def create_witch_sprite():
     global witch_sprite
     witch_sprite = sprites.create(assets.image("""
@@ -1076,6 +1117,7 @@ mode_b: Sprite = None
 mode_a: Sprite = None
 
 # Player stats
+player_char_name = ""
 player_hp = 0
 player_power = 0
 player_talent = 0
@@ -1087,19 +1129,25 @@ player_coins = 0
 player_points = 0
 
 ## Player stats menu sprites
-stats_main_container_sprite = None
-stats_header_sprite = None
-stats_player_container_sprite = None
-stats_player_stats_container_sprite = None
+stats_main_container_sprite: Sprite = None
+stats_header_sprite: Sprite = None
+stats_player_container_sprite: Sprite = None
+stats_player_stats_container_sprite: Sprite = None
 
-stats_player_name_sprite = None
-stats_player_level_sprite = None
-stats_player_points_sprite = None
-stats_player_coins_sprite = None
-stats_player_hp_sprite = None
-stats_player_power_sprite = None
-stats_player_talent_sprite = None
-stats_player_luck_sprite = None
+stats_player_name_sprite: Sprite = None
+stats_player_level_sprite: Sprite = None
+stats_player_exp_bar_sprite: Sprite = None
+stats_player_points_sprite: Sprite = None
+stats_player_coins_sprite: Sprite = None
+stats_player_hp_sprite: Sprite = None
+stats_player_power_sprite: Sprite = None
+stats_player_talent_sprite: Sprite = None
+stats_player_luck_sprite: Sprite = None
+
+# Level variables
+levels = []
+last_level_number = 0
+current_level_number = 0
 
 # Booleans
 on_main_screen = True
@@ -1111,9 +1159,8 @@ choose_campaign_mode = True
 choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False
+player_stats_menu_opened = False
 
 # On start
 init_player_stats()
-create_witch_sprite()
-create_player()
 open_main_screen()
