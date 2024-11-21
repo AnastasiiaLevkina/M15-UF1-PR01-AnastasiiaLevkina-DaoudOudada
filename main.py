@@ -373,10 +373,10 @@ def open_choose_mode():
                     . . . . . . . . . . . . . . . .
         """),
         SpriteKind.player)
-        
     cursor.set_position(76, 63)
+    if choose_tower_mode:
+        cursor.image.flip_x()
     on_choose_mode = True
-    set_cursor_facing_left()
     exit_icon()
 
 def close_choose_mode():

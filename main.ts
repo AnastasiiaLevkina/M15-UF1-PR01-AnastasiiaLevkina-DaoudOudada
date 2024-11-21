@@ -377,8 +377,11 @@ function open_choose_mode() {
                     . . . . . . . . . . . . . . . .
         `, SpriteKind.Player)
     cursor.setPosition(76, 63)
+    if (choose_tower_mode) {
+        cursor.image.flipX()
+    }
+    
     on_choose_mode = true
-    set_cursor_facing_left()
     exit_icon()
 }
 
