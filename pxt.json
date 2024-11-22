@@ -27,5 +27,23 @@
     "supportedTargets": [
         "arcade"
     ],
-    "preferredEditor": "pyprj"
+    "preferredEditor": "pyprj",
+    "palette": [
+        "#000000",
+        "#F4F2DB",
+        "#FF2121",
+        "#B27B0E",
+        "#CEBC0C",
+        "#595856",
+        "#249CA3",
+        "#838276",
+        "#027987",
+        "#87F2FF",
+        "#31302F",
+        "#9F00D6",
+        "#60007E",
+        "#420900",
+        "#330042",
+        "#292727"
+    ]
 }
