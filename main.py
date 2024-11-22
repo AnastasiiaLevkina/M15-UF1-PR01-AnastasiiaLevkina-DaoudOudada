@@ -1012,7 +1012,6 @@ def next_level():
 #Characters
 def create_player():
     global player_sprite, mage_sprite, player_char_name
-    create_mage_sprite()
     player_sprite = mage_sprite
     player_sprite.z = 5
 

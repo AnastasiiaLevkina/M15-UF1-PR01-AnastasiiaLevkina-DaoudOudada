@@ -1112,7 +1112,6 @@ function next_level() {
 // Characters
 function create_player() {
     
-    create_mage_sprite()
     player_sprite = mage_sprite
     player_sprite.z = 5
 }
