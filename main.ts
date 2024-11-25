@@ -3,6 +3,7 @@ namespace SpriteKind {
     export const TowerMode = SpriteKind.create()
     export const Icon = SpriteKind.create()
     export const Container = SpriteKind.create()
+    export const Asset = SpriteKind.create()
 }
 
 class Level {
@@ -17,13 +18,13 @@ class Level {
         this.___level_number = value
     }
     
-    static enemy_appearance_order: number[][]
+    static enemy_appearance_order: any[]
     private ___enemy_appearance_order_is_set: boolean
-    private ___enemy_appearance_order: number[][]
-    get enemy_appearance_order(): number[][] {
+    private ___enemy_appearance_order: any[]
+    get enemy_appearance_order(): any[] {
         return this.___enemy_appearance_order_is_set ? this.___enemy_appearance_order : Level.enemy_appearance_order
     }
-    set enemy_appearance_order(value: number[][]) {
+    set enemy_appearance_order(value: any[]) {
         this.___enemy_appearance_order_is_set = true
         this.___enemy_appearance_order = value
     }
@@ -61,15 +62,15 @@ class Level {
         this.___stars = value
     }
     
-    static scene_background_img: string
-    private ___scene_background_img_is_set: boolean
-    private ___scene_background_img: string
-    get scene_background_img(): string {
-        return this.___scene_background_img_is_set ? this.___scene_background_img : Level.scene_background_img
+    static background_img: string
+    private ___background_img_is_set: boolean
+    private ___background_img: string
+    get background_img(): string {
+        return this.___background_img_is_set ? this.___background_img : Level.background_img
     }
-    set scene_background_img(value: string) {
-        this.___scene_background_img_is_set = true
-        this.___scene_background_img = value
+    set background_img(value: string) {
+        this.___background_img_is_set = true
+        this.___background_img = value
     }
     
     static level_music: string
@@ -86,21 +87,22 @@ class Level {
     public static __initLevel() {
         Level.level_number = 0
         //  Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
-        Level.enemy_appearance_order = [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]]
+        Level.enemy_appearance_order = []
         Level.level_passed = false
         Level.level_opened = false
         Level.stars = 0
-        Level.scene_background_img = ""
+        Level.background_img = ""
         Level.level_music = ""
     }
     
-    constructor(lvl_num: number, enemies: number[][], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string) {
+    constructor(lvl_num: number, enemies: any[], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string) {
         this.level_number = lvl_num
         this.enemy_appearance_order = enemies
         this.level_passed = lvl_passed
         this.level_opened = lvl_opened
         this.stars = stars
-        this.scene_background_img = bg
+        this.background_img = bg
+        this.level_music = mus
     }
     
 }
@@ -114,12 +116,18 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
         open_choose_mode()
     } else if (on_settings_menu == true) {
         
-    } else if (on_choose_mode) {
+    } else if (on_choose_mode == true) {
         close_choose_mode()
         if (choose_campaign_mode) {
             open_level_map()
         } else {
             open_tower_mode()
+        }
+        
+    } else if (player_stats_menu_opened == true) {
+        if (continue_button_selected) {
+            close_player_stats_menu()
+            play_level(campaign_levels[current_level_number])
         }
         
     }
@@ -135,10 +143,13 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
     } else if (on_choose_mode == true) {
         close_choose_mode()
         open_main_screen()
+    } else if (on_level_map_screen == true) {
+        close_level_map()
+        open_choose_mode()
     } else if (player_stats_menu_opened == true) {
         close_player_stats_menu()
         if (choose_campaign_mode) {
-            
+            open_level_map()
         } else {
             open_choose_mode()
         }
@@ -150,20 +161,48 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed(
     
     if (on_choose_mode) {
         set_cursor_facing_left()
+    } else if (playing_level) {
+        attack_left()
     } else {
         
     }
+    
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function on_up_pressed() {
+    
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
     
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
     
     if (on_choose_mode) {
         set_cursor_facing_right()
+    } else if (playing_level) {
+        attack_right()
     } else {
         
     }
     
 })
+function attack_left() {
+    
+    if (player_facing_right) {
+        player_sprite.image.flipX()
+    }
+    
+}
+
+//  Play attack animation
+function attack_right() {
+    
+    if (!player_facing_right) {
+        player_sprite.image.flipX()
+    }
+    
+}
+
+//  Play attack animation
 // Screens
 function open_main_screen() {
     
@@ -388,7 +427,10 @@ function close_choose_mode() {
 }
 
 function open_level_map() {
-    
+    scene.setBackgroundImage(assets.image`
+            level_map_bg
+        `)
+    on_level_map_screen
 }
 
 function close_level_map() {
@@ -652,11 +694,22 @@ function open_tower_mode() {
             fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbffffbffffdfffcddcfffffffffffffffff
             fffffffffffffffffffffffffffffffffbffffffbffffffffffffffffffffffbfcffffcfffffffffffffffcffffffffffffffffffffffffffffffffffffffffffffffffffffdddffffffffffccffffff
     `)
+    let level_sprite = sprites.create(assets.image`
+            knight_sprite
+        `, SpriteKind.Player)
     open_player_stats_menu()
 }
 
 function close_tower_mode() {
     
+}
+
+function play_level(level: Level) {
+    
+    playing_level = true
+    scene.setBackgroundImage(assets.image`
+        game_logo_bg
+    `)
 }
 
 // UI components
@@ -741,6 +794,12 @@ function destroy_exit_icon() {
 function destroy_settings_icon() {
     sprites.destroy(settings_sprite)
     sprites.destroy(letter_b_settings_icon)
+}
+
+function create_level_sprite() {
+    let level_sprite = sprites.create(assets.image`
+            level_square_sprite
+        `, SpriteKind.Asset)
 }
 
 function open_player_stats_menu() {
@@ -1063,9 +1122,12 @@ let stats_player_power_sprite : Sprite = null
 let stats_player_talent_sprite : Sprite = null
 let stats_player_luck_sprite : Sprite = null
 //  Level variables
-let levels = []
+let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "")]
+let map_levels = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 let last_level_number = 0
 let current_level_number = 0
+let playing_level = false
+let player_facing_right = true
 //  Booleans
 let on_main_screen = true
 let on_choose_mode = false
@@ -1077,6 +1139,7 @@ let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
+let continue_button_selected = false
 //  On start
 init_player_stats()
 open_main_screen()

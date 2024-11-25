@@ -4,26 +4,26 @@ class SpriteKind:
     TowerMode = SpriteKind.create()
     Icon = SpriteKind.create()
     Container = SpriteKind.create()
+    Asset = SpriteKind.create()
 
 class Level():
     level_number = 0
     # Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
-    enemy_appearance_order = [
-        [1, 100], [1, 50], [1, 0], [1, 0], [1, 100]
-    ]
+    enemy_appearance_order = []
     level_passed = False
     level_opened = False
     stars = 0
-    scene_background_img = ""
+    background_img = ""
     level_music = ""
     
-    def __init__(self, lvl_num, enemies, lvl_passed, lvl_opened, stars, bg):
+    def __init__(self, lvl_num, enemies, lvl_passed, lvl_opened, stars, bg, mus):
         self.level_number = lvl_num
         self.enemy_appearance_order = enemies
         self.level_passed = lvl_passed
         self.level_opened = lvl_opened
         self.stars = stars
-        self.scene_background_img = bg
+        self.background_img = bg
+        self.level_music = mus
 
 #Controls
 def on_a_pressed():
@@ -32,13 +32,16 @@ def on_a_pressed():
         open_choose_mode()
     elif on_settings_menu == True:
         pass
-    elif on_choose_mode:
+    elif on_choose_mode == True:
         close_choose_mode()
         if choose_campaign_mode:
             open_level_map()
         else:
             open_tower_mode()
-
+    elif player_stats_menu_opened == True:
+        if continue_button_selected:
+            close_player_stats_menu()
+            play_level(campaign_levels[current_level_number])
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_b_pressed():
@@ -51,10 +54,13 @@ def on_b_pressed():
     elif on_choose_mode == True:
         close_choose_mode()
         open_main_screen()
+    elif on_level_map_screen == True:
+        close_level_map()
+        open_choose_mode()
     elif player_stats_menu_opened == True:
         close_player_stats_menu()
         if (choose_campaign_mode):
-            pass
+            open_level_map()
         else:
             open_choose_mode()
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
@@ -63,18 +69,41 @@ def on_left_pressed():
     global on_choose_mode
     if on_choose_mode:
         set_cursor_facing_left()
+    elif playing_level:
+        attack_left()
     else:
         pass
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
+
+def on_up_pressed():
+    pass
+controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
+
+def on_down_pressed():
+    pass
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def on_right_pressed():
     global on_choose_mode
     if on_choose_mode:
         set_cursor_facing_right()
+    elif playing_level:
+        attack_right()
     else:
         pass
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
+def attack_left():
+    global player_sprite, player_facing_right
+    if (player_facing_right):
+        player_sprite.image.flip_x()
+    # Play attack animation
+
+def attack_right():
+    global player_sprite, player_facing_right
+    if not (player_facing_right):
+            player_sprite.image.flip_x()
+    # Play attack animation
 
 #Screens
 def open_main_screen():
@@ -297,7 +326,10 @@ def close_choose_mode():
     on_choose_mode = False
 
 def open_level_map():
-    pass
+    scene.set_background_image(assets.image("""
+            level_map_bg
+        """))
+    on_level_map_screen
 
 def close_level_map():
     pass
@@ -557,10 +589,21 @@ def open_tower_mode():
             fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbffffbffffdfffcddcfffffffffffffffff
             fffffffffffffffffffffffffffffffffbffffffbffffffffffffffffffffffbfcffffcfffffffffffffffcffffffffffffffffffffffffffffffffffffffffffffffffffffdddffffffffffccffffff
     """))
+    level_sprite = sprites.create(assets.image("""
+            knight_sprite
+        """), SpriteKind.player)
     open_player_stats_menu()
 
 def close_tower_mode():
         pass
+
+def play_level(level: Level):
+    global playing_level
+    playing_level = True
+    scene.set_background_image(assets.image("""
+        game_logo_bg
+    """))
+
 
 #UI components
 def exit_icon():
@@ -643,11 +686,17 @@ def destroy_settings_icon():
     sprites.destroy(settings_sprite)
     sprites.destroy(letter_b_settings_icon)
 
+def create_level_sprite():
+    level_sprite = sprites.create(assets.image("""
+            level_square_sprite
+        """), SpriteKind.Asset)
+
 def open_player_stats_menu():
     global stats_main_container_sprite, stats_header_sprite, stats_player_container_sprite, stats_player_stats_container_sprite
     global stats_player_name_sprite, stats_player_coins_sprite, stats_player_exp_bar_sprite
     global player_sprite
     global player_stats_menu_opened
+
     #Containers
     stats_main_container_sprite = sprites.create(img("""
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -964,9 +1013,16 @@ stats_player_talent_sprite: Sprite = None
 stats_player_luck_sprite: Sprite = None
 
 # Level variables
-levels = []
+campaign_levels = [
+    Level(
+        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", ""
+    )
+]
+map_levels = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 last_level_number = 0
 current_level_number = 0
+playing_level = False
+player_facing_right = True
 
 # Booleans
 on_main_screen = True
@@ -979,6 +1035,7 @@ choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
+continue_button_selected = False
 
 # On start
 init_player_stats()
