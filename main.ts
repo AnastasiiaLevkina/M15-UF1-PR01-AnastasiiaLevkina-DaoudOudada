@@ -1223,3 +1223,18 @@ let selected_character = 0
 //  On start
 init_player_stats()
 open_main_screen()
+music.playMelody("C D E F G A B C5", 120)
+music.setTempo(120)
+//  Aumentar el tempo
+//  Maximizar el volumen
+music.setVolume(100)
+//  Agregar un sonido aleatorio para darle más dinamismo
+music.randomizeSound(music.createSoundEffect(WaveShape.Square, 3000, 0, 255, 0, 300, SoundExpressionEffect.None, InterpolationCurve.Linear))
+//  Variación en la melodía para más dinamismo
+music.playMelody("C3 E3 G3 F3 E3 C3 A2 G2", 120)
+music.playMelody("D3 F3 A3 G3 F3 D3 B2 A2", 120)
+music.playMelody("C3 G3 E3 F3 D3 C3 A2 G2", 120)
+//  Cambio en el patrón para mayor dinamismo
+music.playMelody("F3 G3 A3 F3 G3 C3 A2", 100)
+//  Cambio en las notas para una sensación más energética
+music.playMelody("C3 E3 G3 F3 E3 D3 C3 B2", 100)

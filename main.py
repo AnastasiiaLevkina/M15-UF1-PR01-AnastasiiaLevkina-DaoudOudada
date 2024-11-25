@@ -1113,3 +1113,20 @@ selected_character = 0
 # On start
 init_player_stats()
 open_main_screen()
+music.play_melody("C D E F G A B C5", 120)
+
+music.set_tempo(120)  # Aumentar el tempo
+
+# Maximizar el volumen
+music.set_volume(100)
+
+# Agregar un sonido aleatorio para darle más dinamismo
+music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))
+
+# Variación en la melodía para más dinamismo
+music.play_melody("C3 E3 G3 F3 E3 C3 A2 G2", 120)
+music.play_melody("D3 F3 A3 G3 F3 D3 B2 A2", 120)
+music.play_melody("C3 G3 E3 F3 D3 C3 A2 G2", 120)  # Cambio en el patrón para mayor dinamismo
+music.play_melody("F3 G3 A3 F3 G3 C3 A2", 100)  # Cambio en las notas para una sensación más energética
+music.play_melody("C3 E3 G3 F3 E3 D3 C3 B2", 100)  # Mantener el ritmo pero variando un poco
+
