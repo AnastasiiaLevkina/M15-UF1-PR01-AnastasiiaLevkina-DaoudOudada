@@ -63,8 +63,6 @@ def on_b_pressed():
             open_level_map()
         else:
             open_choose_mode()
-    elif on_level_map_screen: ## Can't put == True
-        play_level(campaign_levels[current_level_number])
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
 def on_left_pressed():

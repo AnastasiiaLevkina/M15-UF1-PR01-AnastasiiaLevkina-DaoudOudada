@@ -154,9 +154,6 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             open_choose_mode()
         }
         
-    } else if (on_level_map_screen) {
-        // # Can't put == True
-        play_level(campaign_levels[current_level_number])
     }
     
 })
