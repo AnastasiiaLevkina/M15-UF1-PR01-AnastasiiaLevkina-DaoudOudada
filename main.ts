@@ -2,7 +2,6 @@ namespace SpriteKind {
     export const CampaignMode = SpriteKind.create()
     export const TowerMode = SpriteKind.create()
     export const Icon = SpriteKind.create()
-    export const Container = SpriteKind.create()
     export const Asset = SpriteKind.create()
 }
 
@@ -883,9 +882,8 @@ function open_player_stats_menu() {
     
     
     
-    
     // Containers
-    stats_main_container_sprite = sprites.create(img`
+    let stats_main_container_sprite = sprites.create(img`
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -972,10 +970,10 @@ function open_player_stats_menu() {
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-        `, SpriteKind.Container)
+        `, SpriteKind.Asset)
     scaling.scaleByPercent(stats_main_container_sprite, 20, ScaleDirection.Uniformly, ScaleAnchor.Middle)
     stats_main_container_sprite.z = 0
-    stats_header_sprite = sprites.create(img`
+    let stats_header_sprite = sprites.create(img`
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -998,11 +996,11 @@ function open_player_stats_menu() {
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-        `, SpriteKind.Container)
+        `, SpriteKind.Asset)
     scaling.scaleByPixels(stats_header_sprite, 24, ScaleDirection.Horizontally, ScaleAnchor.Middle)
     stats_header_sprite.setPosition(80, 20)
     stats_header_sprite.z = 2
-    stats_player_container_sprite = sprites.create(img`
+    let stats_player_container_sprite = sprites.create(img`
             eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -1063,10 +1061,17 @@ function open_player_stats_menu() {
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-        `, SpriteKind.Player)
+        `, SpriteKind.Asset)
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.setPosition(37, 50)
     scaling.scaleByPercent(stats_player_container_sprite, -10, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    //  Text
+    let char_name_text = textsprite.create(character_name)
+    char_name_text.setPosition(90, 20)
+    char_name_text.z = 3
+    let player_level_text = textsprite.create("LVL " + player_level)
+    player_level_text.setPosition(120, 20)
+    player_level_text.z = 3
     // Create_player
     create_player()
     player_sprite.setPosition(37, 52)
@@ -1075,11 +1080,8 @@ function open_player_stats_menu() {
 
 function close_player_stats_menu() {
     
-    
-    
-    sprites.destroy(stats_main_container_sprite)
-    sprites.destroy(stats_header_sprite)
-    sprites.destroy(stats_player_container_sprite)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Asset)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Text)
     sprites.destroy(player_sprite)
     player_stats_menu_opened = false
 }
@@ -1174,6 +1176,7 @@ function create_player() {
         player_sprite = assassin_sprite
     }
     
+    character_name = characters[selected_character]
     player_sprite.z = 5
     player_facing_right = true
 }
@@ -1226,10 +1229,6 @@ let player_exp_required = 0
 let player_coins = 0
 let player_points = 0
 // # Player stats menu sprites
-let stats_main_container_sprite : Sprite = null
-let stats_header_sprite : Sprite = null
-let stats_player_container_sprite : Sprite = null
-let stats_player_stats_container_sprite : Sprite = null
 let stats_player_name_sprite : Sprite = null
 let stats_player_level_sprite : Sprite = null
 let stats_player_exp_bar_sprite : Sprite = null
@@ -1240,7 +1239,7 @@ let stats_player_power_sprite : Sprite = null
 let stats_player_talent_sprite : Sprite = null
 let stats_player_luck_sprite : Sprite = null
 //  Level variables
-let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [20, 105]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [59, 95]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [96, 75]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [96, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [46, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [46, 15])]
+let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [20, 105]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15])]
 //  Level 1
 //  Level 2
 //  Level 3
@@ -1265,6 +1264,8 @@ let player_stats_menu_opened = false
 let continue_button_selected = true
 let on_dev_mode = false
 //  Characters
+let characters = ["Knight", "Mage", "Assassin"]
+let character_name = ""
 let selected_character = 0
 //  Music 
 // music.set_tempo(120)  # Aumentar el tempo

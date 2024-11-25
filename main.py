@@ -3,7 +3,6 @@ class SpriteKind:
     CampaignMode = SpriteKind.create()
     TowerMode = SpriteKind.create()
     Icon = SpriteKind.create()
-    Container = SpriteKind.create()
     Asset = SpriteKind.create()
 
 class Level():
@@ -750,9 +749,8 @@ def create_level_selector():
     level_selector.set_position(selector_pos[0], selector_pos[1])
 
 def open_player_stats_menu():
-    global stats_main_container_sprite, stats_header_sprite, stats_player_container_sprite, stats_player_stats_container_sprite
-    global stats_player_name_sprite, stats_player_coins_sprite, stats_player_exp_bar_sprite
-    global player_sprite
+    global player_level
+    global player_sprite, character_name
     global player_stats_menu_opened
 
     #Containers
@@ -844,7 +842,7 @@ def open_player_stats_menu():
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
         """),
-        SpriteKind.Container)
+        SpriteKind.Asset)
     scaling.scale_by_percent(stats_main_container_sprite, 20, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
     stats_main_container_sprite.z = 0
 
@@ -872,7 +870,7 @@ def open_player_stats_menu():
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
         """),
-        SpriteKind.Container)
+        SpriteKind.Asset)
     scaling.scale_by_pixels(stats_header_sprite, 24, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
     stats_header_sprite.set_position(80, 20)
     stats_header_sprite.z = 2
@@ -939,10 +937,19 @@ def open_player_stats_menu():
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
         """),
-        SpriteKind.player)
+        SpriteKind.Asset)
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.set_position(37, 50)
     scaling.scale_by_percent(stats_player_container_sprite, -10, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+
+    # Text
+    char_name_text = textsprite.create(character_name)
+    char_name_text.set_position(90, 20)
+    char_name_text.z = 3
+
+    player_level_text = textsprite.create("LVL " + player_level)
+    player_level_text.set_position(120, 20)
+    player_level_text.z = 3
     
     #Create_player
     create_player()
@@ -951,13 +958,10 @@ def open_player_stats_menu():
     player_stats_menu_opened = True
 
 def close_player_stats_menu():
-    global stats_main_container_sprite, stats_header_sprite, stats_player_container_sprite, stats_player_stats_container_sprite
-    global player_sprite
-    global player_stats_menu_opened
+    global player_sprite, player_stats_menu_opened
     
-    sprites.destroy(stats_main_container_sprite)
-    sprites.destroy(stats_header_sprite)
-    sprites.destroy(stats_player_container_sprite)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Asset)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.text)
     sprites.destroy(player_sprite)
 
     player_stats_menu_opened = False
@@ -1024,7 +1028,7 @@ def play_cutscene_1():
 
 #Characters
 def create_player():
-    global player_sprite, mage_sprite, knight_sprite, assassin_sprite, selected_character, player_facing_right
+    global characters, character_name, player_sprite, mage_sprite, knight_sprite, assassin_sprite, selected_character, player_facing_right
     if (selected_character == 0):
         create_knight_sprite()
         player_sprite = knight_sprite
@@ -1034,6 +1038,7 @@ def create_player():
     elif (selected_character):
         create_assassin_sprite()
         player_sprite = assassin_sprite
+    character_name = characters[selected_character]
         
     player_sprite.z = 5
     player_facing_right = True
@@ -1085,11 +1090,6 @@ player_coins = 0
 player_points = 0
 
 ## Player stats menu sprites
-stats_main_container_sprite: Sprite = None
-stats_header_sprite: Sprite = None
-stats_player_container_sprite: Sprite = None
-stats_player_stats_container_sprite: Sprite = None
-
 stats_player_name_sprite: Sprite = None
 stats_player_level_sprite: Sprite = None
 stats_player_exp_bar_sprite: Sprite = None
@@ -1106,19 +1106,19 @@ campaign_levels = [
         1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (20, 105)
     ), 
     Level( # Level 2
-        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (59, 95)
+        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (59, 95)
     ),
     Level( # Level 3
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (96, 75)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (96, 75)
     ),
     Level( # Level 4
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (96, 45)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (96, 45)
     ),
     Level( # Level 5
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (46, 45)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (46, 45)
     ),
     Level( # Level 6
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (46, 15)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (46, 15)
     )
 ]
 level_selector: Sprite = None
@@ -1141,6 +1141,8 @@ continue_button_selected = True
 on_dev_mode = False
 
 # Characters
+characters = ["Knight", "Mage", "Assassin"]
+character_name = ""
 selected_character = 0
 
 # Music 
