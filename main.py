@@ -941,19 +941,19 @@ def open_player_stats_menu():
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.set_position(37, 50)
     scaling.scale_by_percent(stats_player_container_sprite, -10, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+    
+    #Create_player
+    create_player()
+    player_sprite.set_position(37, 52)
 
     # Text
     char_name_text = textsprite.create(character_name)
-    char_name_text.set_position(90, 20)
+    char_name_text.set_position(40, 20)
     char_name_text.z = 3
 
     player_level_text = textsprite.create("LVL " + player_level)
     player_level_text.set_position(120, 20)
     player_level_text.z = 3
-    
-    #Create_player
-    create_player()
-    player_sprite.set_position(37, 52)
 
     player_stats_menu_opened = True
 
@@ -1039,7 +1039,7 @@ def create_player():
         create_assassin_sprite()
         player_sprite = assassin_sprite
     character_name = characters[selected_character]
-        
+
     player_sprite.z = 5
     player_facing_right = True
 

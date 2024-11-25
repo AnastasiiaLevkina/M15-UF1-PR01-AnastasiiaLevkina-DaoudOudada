@@ -1065,16 +1065,16 @@ function open_player_stats_menu() {
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.setPosition(37, 50)
     scaling.scaleByPercent(stats_player_container_sprite, -10, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    // Create_player
+    create_player()
+    player_sprite.setPosition(37, 52)
     //  Text
     let char_name_text = textsprite.create(character_name)
-    char_name_text.setPosition(90, 20)
+    char_name_text.setPosition(40, 20)
     char_name_text.z = 3
     let player_level_text = textsprite.create("LVL " + player_level)
     player_level_text.setPosition(120, 20)
     player_level_text.z = 3
-    // Create_player
-    create_player()
-    player_sprite.setPosition(37, 52)
     player_stats_menu_opened = true
 }
 
