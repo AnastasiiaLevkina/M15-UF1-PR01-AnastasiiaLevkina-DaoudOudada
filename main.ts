@@ -735,7 +735,7 @@ function play_level(level: Level) {
         game_logo_bg
     `)
     create_player()
-    player_sprite.setPosition(0, 0)
+    player_sprite.setPosition(60, 60)
     //  play idle animation for player
     playing_level = true
 }
@@ -1037,7 +1037,6 @@ function open_player_stats_menu() {
     stats_player_container_sprite.setPosition(37, 50)
     scaling.scaleByPercent(stats_player_container_sprite, -10, ScaleDirection.Uniformly, ScaleAnchor.Middle)
     // Create_player
-    create_mage_sprite()
     create_player()
     player_sprite.setPosition(37, 52)
     player_stats_menu_opened = true
@@ -1220,21 +1219,16 @@ let player_stats_menu_opened = false
 let continue_button_selected = true
 //  Characters
 let selected_character = 0
+//  Music 
+// music.set_tempo(120)  # Aumentar el tempo
+// music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))
+//  Variación en la melodía para más dinamismo
+// music.play_melody("C3 E3 G3 F3 E3 C3 A2 G2", 120)
+// music.play_melody("D3 F3 A3 G3 F3 D3 B2 A2", 120)
+// music.play_melody("C3 G3 E3 F3 D3 C3 A2 G2", 120)  # Cambio en el patrón para mayor dinamismo
+// music.play_melody("F3 G3 A3 F3 G3 C3 A2", 100)  # Cambio en las notas para una sensación más energética
+// music.play_melody("C3 E3 G3 F3 E3 D3 C3 B2", 100)  # Mantener el ritmo pero variando un poco
 //  On start
 init_player_stats()
 open_main_screen()
 music.playMelody("C D E F G A B C5", 120)
-music.setTempo(120)
-//  Aumentar el tempo
-//  Maximizar el volumen
-music.setVolume(100)
-//  Agregar un sonido aleatorio para darle más dinamismo
-music.randomizeSound(music.createSoundEffect(WaveShape.Square, 3000, 0, 255, 0, 300, SoundExpressionEffect.None, InterpolationCurve.Linear))
-//  Variación en la melodía para más dinamismo
-music.playMelody("C3 E3 G3 F3 E3 C3 A2 G2", 120)
-music.playMelody("D3 F3 A3 G3 F3 D3 B2 A2", 120)
-music.playMelody("C3 G3 E3 F3 D3 C3 A2 G2", 120)
-//  Cambio en el patrón para mayor dinamismo
-music.playMelody("F3 G3 A3 F3 G3 C3 A2", 100)
-//  Cambio en las notas para una sensación más energética
-music.playMelody("C3 E3 G3 F3 E3 D3 C3 B2", 100)
