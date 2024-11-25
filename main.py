@@ -15,8 +15,9 @@ class Level():
     stars = 0
     background_img = ""
     level_music = ""
+    pos_on_map = []
     
-    def __init__(self, lvl_num, enemies, lvl_passed, lvl_opened, stars, bg, mus):
+    def __init__(self, lvl_num, enemies, lvl_passed, lvl_opened, stars, bg, mus, pos):
         self.level_number = lvl_num
         self.enemy_appearance_order = enemies
         self.level_passed = lvl_passed
@@ -24,6 +25,8 @@ class Level():
         self.stars = stars
         self.background_img = bg
         self.level_music = mus
+        self.pos_on_map = pos
+
 
 #Controls
 def on_a_pressed():
@@ -66,12 +69,26 @@ def on_b_pressed():
             open_choose_mode()
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
+def on_right_pressed():
+    global on_choose_mode, on_level_map_screen
+    if on_choose_mode:
+        set_cursor_facing_right()
+    elif playing_level:
+        attack_right()
+    elif on_level_map_screen == True:
+        select_next_level()
+    else:
+        pass
+controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
+
 def on_left_pressed():
-    global on_choose_mode
+    global on_choose_mode, on_level_map_screen
     if on_choose_mode:
         set_cursor_facing_left()
     elif playing_level:
         attack_left()
+    elif on_level_map_screen == True: 
+        select_previuous_level()
     else:
         pass
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
@@ -86,26 +103,18 @@ def on_down_pressed():
         select_previuous_level()
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
-def on_right_pressed():
-    global on_choose_mode
-    if on_choose_mode:
-        set_cursor_facing_right()
-    elif playing_level:
-        attack_right()
-    else:
-        pass
-controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
-
 def attack_left():
     global player_sprite, player_facing_right
     if (player_facing_right):
         player_sprite.image.flip_x()
+        player_facing_right = False
     # Play attack animation
 
 def attack_right():
     global player_sprite, player_facing_right
     if not (player_facing_right):
             player_sprite.image.flip_x()
+            player_facing_right = True
     # Play attack animation
 
 #Screens
@@ -335,15 +344,15 @@ def open_level_map():
             level_map_bg
         """))
     level_num = 0
-    for lvl in map_levels:
+    for lvl in campaign_levels:
         level_num += 1
         level_sprite = sprites.create(assets.image("""
                     level_square_sprite
                 """), SpriteKind.Asset)
         scaling.scale_by_percent(level_sprite, -70, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
-        level_sprite.set_position(lvl[0], lvl[1])
+        level_sprite.set_position(lvl.pos_on_map[0], lvl.pos_on_map[1])
         lvl_num = textsprite.create(str(level_num))
-        lvl_num.set_position(lvl[0], lvl[1])
+        lvl_num.set_position(lvl.pos_on_map[0], lvl.pos_on_map[1])
     create_level_selector()
     on_level_map_screen = True
 
@@ -477,8 +486,9 @@ def open_settings_menu():
                     8888888888855555558888888888888888888888888888855855888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888558885588885888888
                     8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
         """))
-        on_settings_menu = True
         exit_icon()
+
+        on_settings_menu = True
 
 def close_settings_menu():
     global on_settings_menu
@@ -619,15 +629,23 @@ def close_tower_mode():
 
 def play_level(level: Level):
     global playing_level, player_sprite
+    if level.level_number == 1:
+        play_cutscene_1()
     scene.set_background_image(assets.image("""
         game_logo_bg
     """))
     create_player()
-    player_sprite.set_position(60, 60)
+    player_sprite.set_position(75, 100)
     # play idle animation for player
     playing_level = True
 
+def level_completed():
+    pass
+
 #UI components
+def create_dev_mode_switch():
+    global dev_mode_switch
+
 def exit_icon():
     global exit_sprite, letter_b_exit_icon
     exit_sprite = sprites.create(img("""
@@ -709,7 +727,7 @@ def destroy_settings_icon():
     sprites.destroy(letter_b_settings_icon)
 
 def create_level_selector():
-    global level_selector, selected_level, map_levels
+    global level_selector, selected_level, campaign_levels
     level_selector = sprites.create(img("""
             3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
                 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
@@ -728,7 +746,7 @@ def create_level_selector():
                 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
                 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
         """), SpriteKind.Asset)
-    selector_pos = map_levels[selected_level]
+    selector_pos = campaign_levels[selected_level].pos_on_map
     level_selector.set_position(selector_pos[0], selector_pos[1])
 
 def open_player_stats_menu():
@@ -977,17 +995,17 @@ def init_player_stats():
     player_coins = 0
 
 def select_next_level():
-    global level_selector, selected_level, map_levels
-    if (selected_level < len(map_levels)-1):
+    global level_selector, selected_level, campaign_levels
+    if (selected_level < len(campaign_levels)-1):
         selected_level += 1
-        new_pos = map_levels[selected_level]
+        new_pos = campaign_levels[selected_level].pos_on_map
         level_selector.set_position(new_pos[0], new_pos[1])
 
 def select_previuous_level():
-    global level_selector, selected_level, map_levels
+    global level_selector, selected_level, campaign_levels
     if (selected_level > 0):
         selected_level -= 1
-        new_pos = map_levels[selected_level]
+        new_pos = campaign_levels[selected_level].pos_on_map
         level_selector.set_position(new_pos[0], new_pos[1])
 
 def promote_to_next_level():
@@ -996,11 +1014,17 @@ def promote_to_next_level():
     player_exp = player_exp - player_exp_required
     player_exp_required *= 1.1
     player_points += 1
-    
+
+def play_cutscene_1():
+    scene.set_background_image(assets.image("""
+            cutscene_bg_1
+        """))
+    # Create assets sprites (no need for global vars)
+    # Play animations
+
 #Characters
 def create_player():
-    global player_sprite, mage_sprite, knight_sprite, assassin_sprite, selected_character
-
+    global player_sprite, mage_sprite, knight_sprite, assassin_sprite, selected_character, player_facing_right
     if (selected_character == 0):
         create_knight_sprite()
         player_sprite = knight_sprite
@@ -1012,6 +1036,7 @@ def create_player():
         player_sprite = assassin_sprite
         
     player_sprite.z = 5
+    player_facing_right = True
 
 def create_knight_sprite():
     global knight_sprite
@@ -1045,6 +1070,7 @@ text_sprite: TextSprite = None
 cursor: Sprite = None
 mode_b: Sprite = None
 mode_a: Sprite = None
+dev_mode_switch: Sprite = None
 
 # Player stats
 player_char_name = ""
@@ -1076,18 +1102,25 @@ stats_player_luck_sprite: Sprite = None
 
 # Level variables
 campaign_levels = [
-    Level(
-        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", ""
+    Level( # Level 1
+        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (20, 105)
+    ), 
+    Level( # Level 2
+        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (59, 95)
+    ),
+    Level( # Level 3
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (96, 75)
+    ),
+    Level( # Level 4
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (96, 45)
+    ),
+    Level( # Level 5
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (46, 45)
+    ),
+    Level( # Level 6
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (46, 15)
     )
 ]
-map_levels = [
-        (20, 105),
-        (59, 95),
-        (96, 75),
-        (96, 45),
-        (46, 45),
-        (46, 15)
-    ]
 level_selector: Sprite = None
 selected_level = 0
 playing_level = False
@@ -1105,6 +1138,7 @@ on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
 continue_button_selected = True
+on_dev_mode = False
 
 # Characters
 selected_character = 0
@@ -1122,5 +1156,3 @@ selected_character = 0
 # On start
 init_player_stats()
 open_main_screen()
-music.play_melody("C D E F G A B C5", 120)
-

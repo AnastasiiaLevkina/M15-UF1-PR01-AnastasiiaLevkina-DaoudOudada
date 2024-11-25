@@ -84,6 +84,17 @@ class Level {
         this.___level_music = value
     }
     
+    static pos_on_map: number[]
+    private ___pos_on_map_is_set: boolean
+    private ___pos_on_map: number[]
+    get pos_on_map(): number[] {
+        return this.___pos_on_map_is_set ? this.___pos_on_map : Level.pos_on_map
+    }
+    set pos_on_map(value: number[]) {
+        this.___pos_on_map_is_set = true
+        this.___pos_on_map = value
+    }
+    
     public static __initLevel() {
         Level.level_number = 0
         //  Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
@@ -93,9 +104,10 @@ class Level {
         Level.stars = 0
         Level.background_img = ""
         Level.level_music = ""
+        Level.pos_on_map = []
     }
     
-    constructor(lvl_num: number, enemies: any[], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string) {
+    constructor(lvl_num: number, enemies: any[], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string, pos: number[]) {
         this.level_number = lvl_num
         this.enemy_appearance_order = enemies
         this.level_passed = lvl_passed
@@ -103,6 +115,7 @@ class Level {
         this.stars = stars
         this.background_img = bg
         this.level_music = mus
+        this.pos_on_map = pos
     }
     
 }
@@ -158,12 +171,27 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
     }
     
 })
+controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
+    
+    if (on_choose_mode) {
+        set_cursor_facing_right()
+    } else if (playing_level) {
+        attack_right()
+    } else if (on_level_map_screen == true) {
+        select_next_level()
+    } else {
+        
+    }
+    
+})
 controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
     
     if (on_choose_mode) {
         set_cursor_facing_left()
     } else if (playing_level) {
         attack_left()
+    } else if (on_level_map_screen == true) {
+        select_previuous_level()
     } else {
         
     }
@@ -181,21 +209,11 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed(
     }
     
 })
-controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
-    
-    if (on_choose_mode) {
-        set_cursor_facing_right()
-    } else if (playing_level) {
-        attack_right()
-    } else {
-        
-    }
-    
-})
 function attack_left() {
     
     if (player_facing_right) {
         player_sprite.image.flipX()
+        player_facing_right = false
     }
     
 }
@@ -205,6 +223,7 @@ function attack_right() {
     
     if (!player_facing_right) {
         player_sprite.image.flipX()
+        player_facing_right = true
     }
     
 }
@@ -441,15 +460,15 @@ function open_level_map() {
             level_map_bg
         `)
     let level_num = 0
-    for (let lvl of map_levels) {
+    for (let lvl of campaign_levels) {
         level_num += 1
         level_sprite = sprites.create(assets.image`
                     level_square_sprite
                 `, SpriteKind.Asset)
         scaling.scaleByPercent(level_sprite, -70, ScaleDirection.Uniformly, ScaleAnchor.Middle)
-        level_sprite.setPosition(lvl[0], lvl[1])
+        level_sprite.setPosition(lvl.pos_on_map[0], lvl.pos_on_map[1])
         lvl_num = textsprite.create("" + level_num)
-        lvl_num.setPosition(lvl[0], lvl[1])
+        lvl_num.setPosition(lvl.pos_on_map[0], lvl.pos_on_map[1])
     }
     create_level_selector()
     on_level_map_screen = true
@@ -586,8 +605,8 @@ function open_settings_menu() {
                     8888888888855555558888888888888888888888888888855855888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888558885588885888888
                     8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
         `)
-    on_settings_menu = true
     exit_icon()
+    on_settings_menu = true
 }
 
 function close_settings_menu() {
@@ -731,16 +750,28 @@ function close_tower_mode() {
 
 function play_level(level: Level) {
     
+    if (level.level_number == 1) {
+        play_cutscene_1()
+    }
+    
     scene.setBackgroundImage(assets.image`
         game_logo_bg
     `)
     create_player()
-    player_sprite.setPosition(60, 60)
+    player_sprite.setPosition(75, 100)
     //  play idle animation for player
     playing_level = true
 }
 
+function level_completed() {
+    
+}
+
 // UI components
+function create_dev_mode_switch() {
+    
+}
+
 function exit_icon() {
     
     exit_sprite = sprites.create(img`
@@ -844,7 +875,7 @@ function create_level_selector() {
                 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
                 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
         `, SpriteKind.Asset)
-    let selector_pos = map_levels[selected_level]
+    let selector_pos = campaign_levels[selected_level].pos_on_map
     level_selector.setPosition(selector_pos[0], selector_pos[1])
 }
 
@@ -1094,9 +1125,9 @@ function init_player_stats() {
 function select_next_level() {
     let new_pos: number[];
     
-    if (selected_level < map_levels.length - 1) {
+    if (selected_level < campaign_levels.length - 1) {
         selected_level += 1
-        new_pos = map_levels[selected_level]
+        new_pos = campaign_levels[selected_level].pos_on_map
         level_selector.setPosition(new_pos[0], new_pos[1])
     }
     
@@ -1107,7 +1138,7 @@ function select_previuous_level() {
     
     if (selected_level > 0) {
         selected_level -= 1
-        new_pos = map_levels[selected_level]
+        new_pos = campaign_levels[selected_level].pos_on_map
         level_selector.setPosition(new_pos[0], new_pos[1])
     }
     
@@ -1121,6 +1152,14 @@ function promote_to_next_level() {
     player_points += 1
 }
 
+function play_cutscene_1() {
+    scene.setBackgroundImage(assets.image`
+            cutscene_bg_1
+        `)
+}
+
+//  Create assets sprites (no need for global vars)
+//  Play animations
 // Characters
 function create_player() {
     
@@ -1136,6 +1175,7 @@ function create_player() {
     }
     
     player_sprite.z = 5
+    player_facing_right = true
 }
 
 function create_knight_sprite() {
@@ -1173,6 +1213,7 @@ let text_sprite : TextSprite = null
 let cursor : Sprite = null
 let mode_b : Sprite = null
 let mode_a : Sprite = null
+let dev_mode_switch : Sprite = null
 //  Player stats
 let player_char_name = ""
 let player_hp = 0
@@ -1199,8 +1240,13 @@ let stats_player_power_sprite : Sprite = null
 let stats_player_talent_sprite : Sprite = null
 let stats_player_luck_sprite : Sprite = null
 //  Level variables
-let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "")]
-let map_levels = [[20, 105], [59, 95], [96, 75], [96, 45], [46, 45], [46, 15]]
+let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [20, 105]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [59, 95]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [96, 75]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [96, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [46, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [46, 15])]
+//  Level 1
+//  Level 2
+//  Level 3
+//  Level 4
+//  Level 5
+//  Level 6
 let level_selector : Sprite = null
 let selected_level = 0
 let playing_level = false
@@ -1217,6 +1263,7 @@ let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
 let continue_button_selected = true
+let on_dev_mode = false
 //  Characters
 let selected_character = 0
 //  Music 
@@ -1231,4 +1278,3 @@ let selected_character = 0
 //  On start
 init_player_stats()
 open_main_screen()
-music.playMelody("C D E F G A B C5", 120)
