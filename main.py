@@ -749,7 +749,7 @@ def create_level_selector():
     level_selector.set_position(selector_pos[0], selector_pos[1])
 
 def open_player_stats_menu():
-    global player_level
+    global player_level, player_hp, player_points, player_power
     global player_sprite, character_name
     global player_stats_menu_opened
 
@@ -945,6 +945,7 @@ def open_player_stats_menu():
     #Create_player
     create_player()
     player_sprite.set_position(37, 52)
+    # play idle animation
 
     # Text
     char_name_text = textsprite.create(character_name)
@@ -954,6 +955,26 @@ def open_player_stats_menu():
     player_level_text = textsprite.create("LVL " + player_level)
     player_level_text.set_position(120, 20)
     player_level_text.z = 3
+
+    hp_text = textsprite.create("HP")
+    hp_text.set_position(80, 40)
+    hp_text.z = 3
+
+    power_text = textsprite.create("PW")
+    power_text.set_position(80, 50)
+    power_text.z = 3
+
+    power_text = textsprite.create("PW")
+    power_text.set_position(80, 50)
+    power_text.z = 3
+
+    player_hp_text = textsprite.create(str(player_hp))
+    player_hp_text.set_position(125, 40)
+    player_hp_text.z = 3
+
+    player_power_text = textsprite.create(str(player_power))
+    player_power_text.set_position(125, 50)
+    player_power_text.z = 3
 
     player_stats_menu_opened = True
 

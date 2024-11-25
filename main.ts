@@ -1068,6 +1068,7 @@ function open_player_stats_menu() {
     // Create_player
     create_player()
     player_sprite.setPosition(37, 52)
+    //  play idle animation
     //  Text
     let char_name_text = textsprite.create(character_name)
     char_name_text.setPosition(40, 20)
@@ -1075,6 +1076,21 @@ function open_player_stats_menu() {
     let player_level_text = textsprite.create("LVL " + player_level)
     player_level_text.setPosition(120, 20)
     player_level_text.z = 3
+    let hp_text = textsprite.create("HP")
+    hp_text.setPosition(80, 40)
+    hp_text.z = 3
+    let power_text = textsprite.create("PW")
+    power_text.setPosition(80, 50)
+    power_text.z = 3
+    power_text = textsprite.create("PW")
+    power_text.setPosition(80, 50)
+    power_text.z = 3
+    let player_hp_text = textsprite.create("" + player_hp)
+    player_hp_text.setPosition(125, 40)
+    player_hp_text.z = 3
+    let player_power_text = textsprite.create("" + player_power)
+    player_power_text.setPosition(125, 50)
+    player_power_text.z = 3
     player_stats_menu_opened = true
 }
 
