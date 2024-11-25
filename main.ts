@@ -128,7 +128,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
     } else if (player_stats_menu_opened == true) {
         if (continue_button_selected) {
             close_player_stats_menu()
-            play_level(campaign_levels[current_level_number])
+            play_level(campaign_levels[selected_level])
         }
         
     }
@@ -1125,7 +1125,17 @@ function promote_to_next_level() {
 // Characters
 function create_player() {
     
-    player_sprite = mage_sprite
+    if (selected_character == 0) {
+        create_knight_sprite()
+        player_sprite = knight_sprite
+    } else if (selected_character == 1) {
+        create_mage_sprite()
+        player_sprite = mage_sprite
+    } else if (selected_character) {
+        create_assassin_sprite()
+        player_sprite = assassin_sprite
+    }
+    
     player_sprite.z = 5
 }
 
@@ -1192,12 +1202,10 @@ let stats_player_luck_sprite : Sprite = null
 //  Level variables
 let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "")]
 let map_levels = [[20, 105], [59, 95], [96, 75], [96, 45], [46, 45], [46, 15]]
+let level_selector : Sprite = null
 let selected_level = 0
-let last_level_number = 0
-let current_level_number = 0
 let playing_level = false
 let player_facing_right = true
-let level_selector : Sprite = null
 //  Booleans
 let on_main_screen = true
 let on_choose_mode = false
@@ -1209,7 +1217,9 @@ let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
-let continue_button_selected = false
+let continue_button_selected = true
+//  Characters
+let selected_character = 0
 //  On start
 init_player_stats()
 open_main_screen()

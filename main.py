@@ -42,7 +42,7 @@ def on_a_pressed():
     elif player_stats_menu_opened == True:
         if continue_button_selected:
             close_player_stats_menu()
-            play_level(campaign_levels[current_level_number])
+            play_level(campaign_levels[selected_level])
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_b_pressed():
@@ -1000,8 +1000,18 @@ def promote_to_next_level():
     
 #Characters
 def create_player():
-    global player_sprite, mage_sprite, player_char_name
-    player_sprite = mage_sprite
+    global player_sprite, mage_sprite, knight_sprite, assassin_sprite, selected_character
+
+    if (selected_character == 0):
+        create_knight_sprite()
+        player_sprite = knight_sprite
+    elif (selected_character == 1):
+        create_mage_sprite()
+        player_sprite = mage_sprite
+    elif (selected_character):
+        create_assassin_sprite()
+        player_sprite = assassin_sprite
+        
     player_sprite.z = 5
 
 def create_knight_sprite():
@@ -1079,12 +1089,10 @@ map_levels = [
         (46, 45),
         (46, 15)
     ]
+level_selector: Sprite = None
 selected_level = 0
-last_level_number = 0
-current_level_number = 0
 playing_level = False
 player_facing_right = True
-level_selector: Sprite = None
 
 # Booleans
 on_main_screen = True
@@ -1097,7 +1105,10 @@ choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
-continue_button_selected = False
+continue_button_selected = True
+
+# Characters
+selected_character = 0
 
 # On start
 init_player_stats()
