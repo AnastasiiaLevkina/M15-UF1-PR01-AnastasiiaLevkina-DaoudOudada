@@ -29,9 +29,7 @@ class Level():
 def on_a_pressed():
     if on_main_screen == True:
         close_main_screen()
-        open_choose_mode()
-    elif on_settings_menu == True:
-        pass
+        open_choose_mode()        
     elif on_choose_mode == True:
         close_choose_mode()
         if choose_campaign_mode:
@@ -39,6 +37,7 @@ def on_a_pressed():
         else:
             open_tower_mode()
     elif on_level_map_screen:
+        close_level_map()
         open_player_stats_menu()
     elif player_stats_menu_opened == True:
         if continue_button_selected:
@@ -78,11 +77,13 @@ def on_left_pressed():
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
 def on_up_pressed():
-    pass
+    if on_level_map_screen == True: 
+        select_next_level()
 controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
 
 def on_down_pressed():
-    pass
+    if on_level_map_screen == True:
+        select_previuous_level()
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def on_right_pressed():
@@ -329,102 +330,31 @@ def close_choose_mode():
     on_choose_mode = False
 
 def open_level_map():
-    global on_level_map_screen, level_sprites, level_numbers
+    global on_level_map_screen
     scene.set_background_image(assets.image("""
             level_map_bg
         """))
-    x = 146
-    y = 105
-    level_num = 1
-
-    # Dibujar los niveles en un patrón
-    while level_num <= 6:  # Hay 6 niveles
-        # Crear el sprite para el nivel
-        level_sprite = sprites.create(img("""
-            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-        """), SpriteKind.projectile)
-
-        # Posicionar el sprite en (x, y)
-        level_sprite.set_position(x, y)
-
-        # Asociar el número del nivel con el sprite
-        level_sprites.append(level_sprite)  # Guardar el sprite en la lista
-        level_numbers.append(level_num)    # Guardar el número del nivel
-
-        # Crear el texto del número del nivel
-        texto = textsprite.create("" + str(level_num))
-        texto.set_position(x, y)
-
-        # Actualizar las coordenadas para el próximo nivel (en zigzag)
-        if level_num % 2 == 0:  # Saltar a una fila nueva en zigzag
-            x -= 50
-        else:
-            y -= 30
-
+    level_num = 0
+    for lvl in map_levels:
         level_num += 1
-    handle_level_selection()
+        level_sprite = sprites.create(assets.image("""
+                    level_square_sprite
+                """), SpriteKind.Asset)
+        scaling.scale_by_percent(level_sprite, -70, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+        level_sprite.set_position(lvl[0], lvl[1])
+        lvl_num = textsprite.create(str(level_num))
+        lvl_num.set_position(lvl[0], lvl[1])
+    create_level_selector()
     on_level_map_screen = True
 
-def handle_level_selection():
-    global selected_level
-
-    # Crear un sprite que actúa como selector
-    selector = sprites.create(img("""
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-        """), SpriteKind.player)
-
-# Inicializar el selector en la primera posición del camino
-    selector.set_position(path_positions[0][0], path_positions[0][1])
-    current_pos_index = 0  # Índice de la posición actual en el camino
-
-    # Bucle para detectar selección
-    while True:
-            # Mover el selector hacia arriba
-            if controller.down.is_pressed() and current_pos_index > 0:  # Mover hacia arriba
-                current_pos_index -= 1
-                selector.set_position(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
-                pause(200)  # Añadir una pequeña pausa para evitar movimientos rápidos
-            
-            # Mover el selector hacia abajo
-            elif controller.up.is_pressed() and current_pos_index < len(path_positions) - 1:  # Mover hacia abajo
-                current_pos_index += 1
-                selector.set_position(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
-                pause(200)  # Añadir una pequeña pausa para evitar movimientos rápidos
-
-            # Detectar si se presiona "A" para confirmar la selección
-            if controller.B.is_pressed():
-    
-                selected_level = level_numbers[current_pos_index]  # Obtener el nivel asociado
-                game.show_long_text("Nivel " + str(selected_level) + " seleccionado", DialogLayout.CENTER)
-                return  # Salir del bucle y continuar
-
 def close_level_map():
-    global on_level_map_screen
+    global on_level_map_screen, level_selector
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Asset)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.text)
     on_level_map_screen = False
 
 def open_settings_menu():
-        global on_choose_mode
+        global on_settings_menu
         scene.set_background_image(img("""
             8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888b888886888888588888888888888b8888888888888
                     8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888b888886888888588888888888888b8888888888888
@@ -547,7 +477,7 @@ def open_settings_menu():
                     8888888888855555558888888888888888888888888888855855888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888558885588885888888
                     8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
         """))
-        on_choose_mode = True
+        on_settings_menu = True
         exit_icon()
 
 def close_settings_menu():
@@ -778,10 +708,28 @@ def destroy_settings_icon():
     sprites.destroy(settings_sprite)
     sprites.destroy(letter_b_settings_icon)
 
-def create_level_sprite():
-    level_sprite = sprites.create(assets.image("""
-            level_square_sprite
+def create_level_selector():
+    global level_selector, selected_level, map_levels
+    level_selector = sprites.create(img("""
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
         """), SpriteKind.Asset)
+    selector_pos = map_levels[selected_level]
+    level_selector.set_position(selector_pos[0], selector_pos[1])
 
 def open_player_stats_menu():
     global stats_main_container_sprite, stats_header_sprite, stats_player_container_sprite, stats_player_stats_container_sprite
@@ -1029,13 +977,26 @@ def init_player_stats():
     player_luck = 3
     player_coins = 0
 
-def next_level():
+def select_next_level():
+    global level_selector, selected_level, map_levels
+    if (selected_level < len(map_levels)-1):
+        selected_level += 1
+        new_pos = map_levels[selected_level]
+        level_selector.set_position(new_pos[0], new_pos[1])
+
+def select_previuous_level():
+    global level_selector, selected_level, map_levels
+    if (selected_level > 0):
+        selected_level -= 1
+        new_pos = map_levels[selected_level]
+        level_selector.set_position(new_pos[0], new_pos[1])
+
+def promote_to_next_level():
     global player_level, player_exp, player_exp_required, player_points
     player_level += 1
     player_exp = player_exp - player_exp_required
     player_exp_required *= 1.1
     player_points += 1
-    
     
 #Characters
 def create_player():
@@ -1110,11 +1071,20 @@ campaign_levels = [
         1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", ""
     )
 ]
-map_levels = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_levels = [
+        (20, 105),
+        (59, 95),
+        (96, 75),
+        (96, 45),
+        (46, 45),
+        (46, 15)
+    ]
+selected_level = 0
 last_level_number = 0
 current_level_number = 0
 playing_level = False
 player_facing_right = True
+level_selector: Sprite = None
 
 # Booleans
 on_main_screen = True
@@ -1128,19 +1098,6 @@ on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
 continue_button_selected = False
-
-# Level map
-level_sprites: List[Sprite] = []  # Lista para almacenar los sprites de los niveles
-level_numbers: List[number] = []     # Lista para asociar números de nivel
-selected_level = 0  # Nivel seleccionado
-path_positions = [
-    (146, 105),  # Nivel 1
-    (146, 75),   # Nivel 2
-    (96, 75),   # Nivel 3
-    (96, 45),   # Nivel 4
-    (46, 45),  # Nivel 5
-    (46, 15)   # Nivel 6
-]
 
 # On start
 init_player_stats()

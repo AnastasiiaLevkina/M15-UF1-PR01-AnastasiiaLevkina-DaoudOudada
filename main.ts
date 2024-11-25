@@ -114,8 +114,6 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
     if (on_main_screen == true) {
         close_main_screen()
         open_choose_mode()
-    } else if (on_settings_menu == true) {
-        
     } else if (on_choose_mode == true) {
         close_choose_mode()
         if (choose_campaign_mode) {
@@ -125,6 +123,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
         }
         
     } else if (on_level_map_screen) {
+        close_level_map()
         open_player_stats_menu()
     } else if (player_stats_menu_opened == true) {
         if (continue_button_selected) {
@@ -171,9 +170,15 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed(
     
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function on_up_pressed() {
+    if (on_level_map_screen == true) {
+        select_next_level()
+    }
     
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
+    if (on_level_map_screen == true) {
+        select_previuous_level()
+    }
     
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
@@ -430,108 +435,30 @@ function close_choose_mode() {
 
 function open_level_map() {
     let level_sprite: Sprite;
-    let texto: TextSprite;
+    let lvl_num: TextSprite;
     
     scene.setBackgroundImage(assets.image`
             level_map_bg
         `)
-    let x = 146
-    let y = 105
-    let level_num = 1
-    //  Dibujar los niveles en un patrón
-    while (level_num <= 6) {
-        //  Hay 6 niveles
-        //  Crear el sprite para el nivel
-        level_sprite = sprites.create(img`
-            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 . . . . . . . . . . . 2 2 2
-            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-        `, SpriteKind.Projectile)
-        //  Posicionar el sprite en (x, y)
-        level_sprite.setPosition(x, y)
-        //  Asociar el número del nivel con el sprite
-        level_sprites.push(level_sprite)
-        //  Guardar el sprite en la lista
-        level_numbers.push(level_num)
-        //  Guardar el número del nivel
-        //  Crear el texto del número del nivel
-        texto = textsprite.create("" + ("" + level_num))
-        texto.setPosition(x, y)
-        //  Actualizar las coordenadas para el próximo nivel (en zigzag)
-        if (level_num % 2 == 0) {
-            //  Saltar a una fila nueva en zigzag
-            x -= 50
-        } else {
-            y -= 30
-        }
-        
+    let level_num = 0
+    for (let lvl of map_levels) {
         level_num += 1
+        level_sprite = sprites.create(assets.image`
+                    level_square_sprite
+                `, SpriteKind.Asset)
+        scaling.scaleByPercent(level_sprite, -70, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+        level_sprite.setPosition(lvl[0], lvl[1])
+        lvl_num = textsprite.create("" + level_num)
+        lvl_num.setPosition(lvl[0], lvl[1])
     }
-    handle_level_selection()
+    create_level_selector()
     on_level_map_screen = true
 }
 
-function handle_level_selection() {
-    
-    //  Crear un sprite que actúa como selector
-    let selector = sprites.create(img`
-            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 . . . . . . . . . . . 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-        `, SpriteKind.Player)
-    //  Inicializar el selector en la primera posición del camino
-    selector.setPosition(path_positions[0][0], path_positions[0][1])
-    let current_pos_index = 0
-    //  Índice de la posición actual en el camino
-    //  Bucle para detectar selección
-    while (true) {
-        //  Mover el selector hacia arriba
-        if (controller.down.isPressed() && current_pos_index > 0) {
-            //  Mover hacia arriba
-            current_pos_index -= 1
-            selector.setPosition(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
-            pause(200)
-        } else if (controller.up.isPressed() && current_pos_index < path_positions.length - 1) {
-            //  Añadir una pequeña pausa para evitar movimientos rápidos
-            //  Mover el selector hacia abajo
-            //  Mover hacia abajo
-            current_pos_index += 1
-            selector.setPosition(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
-            pause(200)
-        }
-        
-        //  Añadir una pequeña pausa para evitar movimientos rápidos
-        //  Detectar si se presiona "A" para confirmar la selección
-        if (controller.B.isPressed()) {
-            selected_level = level_numbers[current_pos_index]
-            //  Obtener el nivel asociado
-            game.showLongText("Nivel " + ("" + selected_level) + " seleccionado", DialogLayout.Center)
-            return
-        }
-        
-    }
-}
-
-//  Salir del bucle y continuar
 function close_level_map() {
     
+    sprites.destroyAllSpritesOfKind(SpriteKind.Asset)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Text)
     on_level_map_screen = false
 }
 
@@ -659,7 +586,7 @@ function open_settings_menu() {
                     8888888888855555558888888888888888888888888888855855888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888558885588885888888
                     8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
         `)
-    on_choose_mode = true
+    on_settings_menu = true
     exit_icon()
 }
 
@@ -897,10 +824,28 @@ function destroy_settings_icon() {
     sprites.destroy(letter_b_settings_icon)
 }
 
-function create_level_sprite() {
-    let level_sprite = sprites.create(assets.image`
-            level_square_sprite
+function create_level_selector() {
+    
+    level_selector = sprites.create(img`
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
         `, SpriteKind.Asset)
+    let selector_pos = map_levels[selected_level]
+    level_selector.setPosition(selector_pos[0], selector_pos[1])
 }
 
 function open_player_stats_menu() {
@@ -1147,7 +1092,29 @@ function init_player_stats() {
     player_coins = 0
 }
 
-function next_level() {
+function select_next_level() {
+    let new_pos: number[];
+    
+    if (selected_level < map_levels.length - 1) {
+        selected_level += 1
+        new_pos = map_levels[selected_level]
+        level_selector.setPosition(new_pos[0], new_pos[1])
+    }
+    
+}
+
+function select_previuous_level() {
+    let new_pos: number[];
+    
+    if (selected_level > 0) {
+        selected_level -= 1
+        new_pos = map_levels[selected_level]
+        level_selector.setPosition(new_pos[0], new_pos[1])
+    }
+    
+}
+
+function promote_to_next_level() {
     
     player_level += 1
     player_exp = player_exp - player_exp_required
@@ -1224,11 +1191,13 @@ let stats_player_talent_sprite : Sprite = null
 let stats_player_luck_sprite : Sprite = null
 //  Level variables
 let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "")]
-let map_levels = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+let map_levels = [[20, 105], [59, 95], [96, 75], [96, 45], [46, 45], [46, 15]]
+let selected_level = 0
 let last_level_number = 0
 let current_level_number = 0
 let playing_level = false
 let player_facing_right = true
+let level_selector : Sprite = null
 //  Booleans
 let on_main_screen = true
 let on_choose_mode = false
@@ -1241,20 +1210,6 @@ let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
 let continue_button_selected = false
-//  Level map
-let level_sprites : Sprite[] = []
-//  Lista para almacenar los sprites de los niveles
-let level_numbers : number[] = []
-//  Lista para asociar números de nivel
-let selected_level = 0
-//  Nivel seleccionado
-let path_positions = [[146, 105], [146, 75], [96, 75], [96, 45], [46, 45], [46, 15]]
-//  Nivel 1
-//  Nivel 2
-//  Nivel 3
-//  Nivel 4
-//  Nivel 5
-//  Nivel 6
 //  On start
 init_player_stats()
 open_main_screen()
