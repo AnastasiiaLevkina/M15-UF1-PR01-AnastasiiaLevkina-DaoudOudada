@@ -124,6 +124,8 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
             open_tower_mode()
         }
         
+    } else if (on_level_map_screen) {
+        open_player_stats_menu()
     } else if (player_stats_menu_opened == true) {
         if (continue_button_selected) {
             close_player_stats_menu()
@@ -427,14 +429,16 @@ function close_choose_mode() {
 }
 
 function open_level_map() {
+    
     scene.setBackgroundImage(assets.image`
             level_map_bg
         `)
-    on_level_map_screen
+    on_level_map_screen = true
 }
 
 function close_level_map() {
     
+    on_level_map_screen = false
 }
 
 function open_settings_menu() {

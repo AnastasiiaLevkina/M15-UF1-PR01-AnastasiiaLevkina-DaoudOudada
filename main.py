@@ -38,6 +38,8 @@ def on_a_pressed():
             open_level_map()
         else:
             open_tower_mode()
+    elif on_level_map_screen:
+        open_player_stats_menu()
     elif player_stats_menu_opened == True:
         if continue_button_selected:
             close_player_stats_menu()
@@ -327,13 +329,15 @@ def close_choose_mode():
     on_choose_mode = False
 
 def open_level_map():
+    global on_level_map_screen
     scene.set_background_image(assets.image("""
             level_map_bg
         """))
-    on_level_map_screen
+    on_level_map_screen = True
 
 def close_level_map():
-    pass
+    global on_level_map_screen
+    on_level_map_screen = False
 
 def open_settings_menu():
         global on_choose_mode
