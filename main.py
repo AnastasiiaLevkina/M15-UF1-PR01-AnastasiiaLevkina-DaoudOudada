@@ -63,6 +63,8 @@ def on_b_pressed():
             open_level_map()
         else:
             open_choose_mode()
+    elif on_level_map_screen: ## Can't put == True
+        play_level(campaign_levels[current_level_number])
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
 def on_left_pressed():
@@ -119,6 +121,7 @@ def open_main_screen():
     bottom_text()
     settings_icon()
     on_main_screen = True
+
 def close_main_screen():
     global on_main_screen
     music.stop_all_sounds()
@@ -593,16 +596,21 @@ def open_tower_mode():
             knight_sprite
         """), SpriteKind.player)
     open_player_stats_menu()
+    
 
 def close_tower_mode():
         pass
 
 def play_level(level: Level):
-    global playing_level
-    playing_level = True
+    global playing_level, player_sprite
     scene.set_background_image(assets.image("""
         game_logo_bg
     """))
+    create_player()
+    player_sprite.set_position(0, 0)
+    # play idle animation for player
+    playing_level = True
+
 
 
 #UI components

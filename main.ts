@@ -154,6 +154,9 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             open_choose_mode()
         }
         
+    } else if (on_level_map_screen) {
+        // # Can't put == True
+        play_level(campaign_levels[current_level_number])
     }
     
 })
@@ -706,10 +709,13 @@ function close_tower_mode() {
 
 function play_level(level: Level) {
     
-    playing_level = true
     scene.setBackgroundImage(assets.image`
         game_logo_bg
     `)
+    create_player()
+    player_sprite.setPosition(0, 0)
+    //  play idle animation for player
+    playing_level = true
 }
 
 // UI components
