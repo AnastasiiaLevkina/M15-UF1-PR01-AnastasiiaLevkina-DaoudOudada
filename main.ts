@@ -429,13 +429,107 @@ function close_choose_mode() {
 }
 
 function open_level_map() {
+    let level_sprite: Sprite;
+    let texto: TextSprite;
     
     scene.setBackgroundImage(assets.image`
             level_map_bg
         `)
+    let x = 146
+    let y = 105
+    let level_num = 1
+    //  Dibujar los niveles en un patrón
+    while (level_num <= 6) {
+        //  Hay 6 niveles
+        //  Crear el sprite para el nivel
+        level_sprite = sprites.create(img`
+            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        `, SpriteKind.Projectile)
+        //  Posicionar el sprite en (x, y)
+        level_sprite.setPosition(x, y)
+        //  Asociar el número del nivel con el sprite
+        level_sprites.push(level_sprite)
+        //  Guardar el sprite en la lista
+        level_numbers.push(level_num)
+        //  Guardar el número del nivel
+        //  Crear el texto del número del nivel
+        texto = textsprite.create("" + ("" + level_num))
+        texto.setPosition(x, y)
+        //  Actualizar las coordenadas para el próximo nivel (en zigzag)
+        if (level_num % 2 == 0) {
+            //  Saltar a una fila nueva en zigzag
+            x -= 50
+        } else {
+            y -= 30
+        }
+        
+        level_num += 1
+    }
+    handle_level_selection()
     on_level_map_screen = true
 }
 
+function handle_level_selection() {
+    
+    //  Crear un sprite que actúa como selector
+    let selector = sprites.create(img`
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        `, SpriteKind.Player)
+    //  Inicializar el selector en la primera posición del camino
+    selector.setPosition(path_positions[0][0], path_positions[0][1])
+    let current_pos_index = 0
+    //  Índice de la posición actual en el camino
+    //  Bucle para detectar selección
+    while (true) {
+        //  Mover el selector hacia arriba
+        if (controller.down.isPressed() && current_pos_index > 0) {
+            //  Mover hacia arriba
+            current_pos_index -= 1
+            selector.setPosition(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
+            pause(200)
+        } else if (controller.up.isPressed() && current_pos_index < path_positions.length - 1) {
+            //  Añadir una pequeña pausa para evitar movimientos rápidos
+            //  Mover el selector hacia abajo
+            //  Mover hacia abajo
+            current_pos_index += 1
+            selector.setPosition(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
+            pause(200)
+        }
+        
+        //  Añadir una pequeña pausa para evitar movimientos rápidos
+        //  Detectar si se presiona "A" para confirmar la selección
+        if (controller.B.isPressed()) {
+            selected_level = level_numbers[current_pos_index]
+            //  Obtener el nivel asociado
+            game.showLongText("Nivel " + ("" + selected_level) + " seleccionado", DialogLayout.Center)
+            return
+        }
+        
+    }
+}
+
+//  Salir del bucle y continuar
 function close_level_map() {
     
     on_level_map_screen = false
@@ -1147,6 +1241,20 @@ let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
 let continue_button_selected = false
+//  Level map
+let level_sprites : Sprite[] = []
+//  Lista para almacenar los sprites de los niveles
+let level_numbers : number[] = []
+//  Lista para asociar números de nivel
+let selected_level = 0
+//  Nivel seleccionado
+let path_positions = [[146, 105], [146, 75], [96, 75], [96, 45], [46, 45], [46, 15]]
+//  Nivel 1
+//  Nivel 2
+//  Nivel 3
+//  Nivel 4
+//  Nivel 5
+//  Nivel 6
 //  On start
 init_player_stats()
 open_main_screen()

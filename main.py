@@ -329,11 +329,95 @@ def close_choose_mode():
     on_choose_mode = False
 
 def open_level_map():
-    global on_level_map_screen
+    global on_level_map_screen, level_sprites, level_numbers
     scene.set_background_image(assets.image("""
             level_map_bg
         """))
+    x = 146
+    y = 105
+    level_num = 1
+
+    # Dibujar los niveles en un patrón
+    while level_num <= 6:  # Hay 6 niveles
+        # Crear el sprite para el nivel
+        level_sprite = sprites.create(img("""
+            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 . . . . . . . . . . . 2 2 2
+            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+        """), SpriteKind.projectile)
+
+        # Posicionar el sprite en (x, y)
+        level_sprite.set_position(x, y)
+
+        # Asociar el número del nivel con el sprite
+        level_sprites.append(level_sprite)  # Guardar el sprite en la lista
+        level_numbers.append(level_num)    # Guardar el número del nivel
+
+        # Crear el texto del número del nivel
+        texto = textsprite.create("" + str(level_num))
+        texto.set_position(x, y)
+
+        # Actualizar las coordenadas para el próximo nivel (en zigzag)
+        if level_num % 2 == 0:  # Saltar a una fila nueva en zigzag
+            x -= 50
+        else:
+            y -= 30
+
+        level_num += 1
+    handle_level_selection()
     on_level_map_screen = True
+
+def handle_level_selection():
+    global selected_level
+
+    # Crear un sprite que actúa como selector
+    selector = sprites.create(img("""
+            3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 . . . . . . . . . . . 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        """), SpriteKind.player)
+
+# Inicializar el selector en la primera posición del camino
+    selector.set_position(path_positions[0][0], path_positions[0][1])
+    current_pos_index = 0  # Índice de la posición actual en el camino
+
+    # Bucle para detectar selección
+    while True:
+            # Mover el selector hacia arriba
+            if controller.down.is_pressed() and current_pos_index > 0:  # Mover hacia arriba
+                current_pos_index -= 1
+                selector.set_position(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
+                pause(200)  # Añadir una pequeña pausa para evitar movimientos rápidos
+            
+            # Mover el selector hacia abajo
+            elif controller.up.is_pressed() and current_pos_index < len(path_positions) - 1:  # Mover hacia abajo
+                current_pos_index += 1
+                selector.set_position(path_positions[current_pos_index][0], path_positions[current_pos_index][1])
+                pause(200)  # Añadir una pequeña pausa para evitar movimientos rápidos
+
+            # Detectar si se presiona "A" para confirmar la selección
+            if controller.B.is_pressed():
+    
+                selected_level = level_numbers[current_pos_index]  # Obtener el nivel asociado
+                game.show_long_text("Nivel " + str(selected_level) + " seleccionado", DialogLayout.CENTER)
+                return  # Salir del bucle y continuar
 
 def close_level_map():
     global on_level_map_screen
@@ -612,8 +696,6 @@ def play_level(level: Level):
     player_sprite.set_position(0, 0)
     # play idle animation for player
     playing_level = True
-
-
 
 #UI components
 def exit_icon():
@@ -1046,6 +1128,19 @@ on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
 continue_button_selected = False
+
+# Level map
+level_sprites: List[Sprite] = []  # Lista para almacenar los sprites de los niveles
+level_numbers: List[number] = []     # Lista para asociar números de nivel
+selected_level = 0  # Nivel seleccionado
+path_positions = [
+    (146, 105),  # Nivel 1
+    (146, 75),   # Nivel 2
+    (96, 75),   # Nivel 3
+    (96, 45),   # Nivel 4
+    (46, 45),  # Nivel 5
+    (46, 15)   # Nivel 6
+]
 
 # On start
 init_player_stats()
