@@ -5,6 +5,30 @@ class SpriteKind:
     Icon = SpriteKind.create()
     Asset = SpriteKind.create()
 
+class Enemy():
+    health = 0
+    damage = 0
+    speed = 0
+
+    def __init__(self, hp, dg, sp):
+        self.health = hp
+        self.damage = dg
+        self.speed = sp
+
+class Enemy_Type1(Enemy): # Enemy that, approaching the player, stops moving and starts attacking
+    min_distance = 0
+    
+    def __init__(self, hp, dg, sp, dist):
+        super().__init__(hp, dg, sp)
+        self.min_distance = dist
+
+class Enemy_Type2(Enemy): # Enemy that passes the player without stopping and dealing damage when approaching
+    hit_distance = 0
+    
+    def __init__(self, hp, dg, sp, dist):
+        super().__init__(hp, dg, sp)
+        self.hit_distance = dist
+
 class Level():
     level_number = 0
     # Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious

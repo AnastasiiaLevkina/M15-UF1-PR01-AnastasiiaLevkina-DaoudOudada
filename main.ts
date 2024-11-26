@@ -5,6 +5,108 @@ namespace SpriteKind {
     export const Asset = SpriteKind.create()
 }
 
+class Enemy {
+    static health: number
+    private ___health_is_set: boolean
+    private ___health: number
+    get health(): number {
+        return this.___health_is_set ? this.___health : Enemy.health
+    }
+    set health(value: number) {
+        this.___health_is_set = true
+        this.___health = value
+    }
+    
+    static damage: number
+    private ___damage_is_set: boolean
+    private ___damage: number
+    get damage(): number {
+        return this.___damage_is_set ? this.___damage : Enemy.damage
+    }
+    set damage(value: number) {
+        this.___damage_is_set = true
+        this.___damage = value
+    }
+    
+    static speed: number
+    private ___speed_is_set: boolean
+    private ___speed: number
+    get speed(): number {
+        return this.___speed_is_set ? this.___speed : Enemy.speed
+    }
+    set speed(value: number) {
+        this.___speed_is_set = true
+        this.___speed = value
+    }
+    
+    public static __initEnemy() {
+        Enemy.health = 0
+        Enemy.damage = 0
+        Enemy.speed = 0
+    }
+    
+    constructor(hp: number, dg: number, sp: number) {
+        this.health = hp
+        this.damage = dg
+        this.speed = sp
+    }
+    
+}
+
+Enemy.__initEnemy()
+
+class Enemy_Type1 extends Enemy {
+    static min_distance: number
+    private ___min_distance_is_set: boolean
+    private ___min_distance: number
+    get min_distance(): number {
+        return this.___min_distance_is_set ? this.___min_distance : Enemy_Type1.min_distance
+    }
+    set min_distance(value: number) {
+        this.___min_distance_is_set = true
+        this.___min_distance = value
+    }
+    
+    public static __initEnemy_Type1() {
+        //  Enemy that, approaching the player, stops moving and starts attacking
+        Enemy_Type1.min_distance = 0
+    }
+    
+    constructor(hp: number, dg: number, sp: number, dist: number) {
+        super(hp, dg, sp)
+        this.min_distance = dist
+    }
+    
+}
+
+Enemy_Type1.__initEnemy_Type1()
+
+class Enemy_Type2 extends Enemy {
+    static hit_distance: number
+    private ___hit_distance_is_set: boolean
+    private ___hit_distance: number
+    get hit_distance(): number {
+        return this.___hit_distance_is_set ? this.___hit_distance : Enemy_Type2.hit_distance
+    }
+    set hit_distance(value: number) {
+        this.___hit_distance_is_set = true
+        this.___hit_distance = value
+    }
+    
+    public static __initEnemy_Type2() {
+        //  Enemy that passes the player without stopping and dealing damage when approaching
+        Enemy_Type2.hit_distance = 0
+    }
+    
+    constructor(hp: number, dg: number, sp: number, dist: number) {
+        super(hp, dg, sp)
+        this.hit_distance = dist
+    }
+    
+}
+
+Enemy_Type2.__initEnemy_Type2()
+
 class Level {
     static level_number: number
     private ___level_number_is_set: boolean
