@@ -1203,3 +1203,24 @@ selected_character = 0
 # On start
 init_player_stats()
 open_main_screen()
+
+
+#info.set_life(3)
+
+# Detectar colisiones y reducir vidas
+#def on_overlap(sprite, otherSprite):
+    # Reducir vidas en 1
+ #   info.change_life_by(-1)
+    # Si aún tiene vidas, volver a la posición inicial
+  #  if info.life() > 0:
+    # Si aún tiene vidas,volver el jugador a la posicion inicial por ejemplo
+        # Si aún tiene vidas, volver a la posición inicial
+        #por ejemplo que el jugador vuelva a su posicion inicial
+      #  sprite.set_position(player_start_x, player_start_y)
+
+
+    # Si las vidas llegan a 0, terminar el juego
+   # else:
+  #      game.over(False)
+
+#sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_overlap)
