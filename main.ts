@@ -196,6 +196,17 @@ class Level {
         this.___pos_on_map = value
     }
     
+    static star_light: string
+    private ___star_light_is_set: boolean
+    private ___star_light: string
+    get star_light(): string {
+        return this.___star_light_is_set ? this.___star_light : Level.star_light
+    }
+    set star_light(value: string) {
+        this.___star_light_is_set = true
+        this.___star_light = value
+    }
+    
     public static __initLevel() {
         Level.level_number = 0
         //  Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
@@ -205,10 +216,11 @@ class Level {
         Level.stars = 0
         Level.background_img = ""
         Level.level_music = ""
+        Level.star_light = ""
         Level.pos_on_map = []
     }
     
-    constructor(lvl_num: number, enemies: any[], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string, pos: number[]) {
+    constructor(lvl_num: number, enemies: any[], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string, pos: number[], light: string) {
         this.level_number = lvl_num
         this.enemy_appearance_order = enemies
         this.level_passed = lvl_passed
@@ -217,6 +229,7 @@ class Level {
         this.background_img = bg
         this.level_music = mus
         this.pos_on_map = pos
+        this.star_light = light
     }
     
 }
@@ -869,6 +882,22 @@ function level_completed() {
 }
 
 // UI components
+function create_stats_menu_sprites() {
+    
+    right_arrow = sprites.create(assets.image`
+            right_select_arrow
+        `, SpriteKind.Asset)
+    scaling.scaleByPercent(right_arrow, -50, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    right_arrow.setPosition(62, 52)
+    right_arrow.z = 6
+    left_arrow = sprites.create(assets.image`
+            left_select_arrow
+        `, SpriteKind.Asset)
+    scaling.scaleByPercent(left_arrow, -50, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    left_arrow.setPosition(13, 52)
+    left_arrow.z = 6
+}
+
 function create_dev_mode_switch() {
     
 }
@@ -981,6 +1010,7 @@ function create_level_selector() {
 }
 
 function open_player_stats_menu() {
+    
     
     
     
@@ -1167,7 +1197,9 @@ function open_player_stats_menu() {
     stats_player_container_sprite.z = 1
     stats_player_container_sprite.setPosition(37, 50)
     scaling.scaleByPercent(stats_player_container_sprite, -10, ScaleDirection.Uniformly, ScaleAnchor.Middle)
-    // Create_player
+    //  Buttons
+    create_stats_menu_sprites()
+    //  Create_player
     create_player()
     player_sprite.setPosition(37, 52)
     //  play idle animation
@@ -1184,13 +1216,16 @@ function open_player_stats_menu() {
     let power_text = textsprite.create("PW")
     power_text.setPosition(80, 50)
     power_text.z = 3
-    power_text = textsprite.create("PW")
-    power_text.setPosition(80, 50)
+    power_text = textsprite.create("LUCK")
+    power_text.setPosition(80, 30)
     power_text.z = 3
     let player_hp_text = textsprite.create("" + player_hp)
     player_hp_text.setPosition(125, 40)
     player_hp_text.z = 3
     let player_power_text = textsprite.create("" + player_power)
+    player_power_text.setPosition(125, 50)
+    player_power_text.z = 3
+    player_power_text = textsprite.create("" + player_luck)
     player_power_text.setPosition(125, 50)
     player_power_text.z = 3
     player_stats_menu_opened = true
@@ -1205,6 +1240,48 @@ function close_player_stats_menu() {
 }
 
 //  Functions
+function select_right_arrow() {
+    
+    right_arrow.setImage(assets.image`
+            right_arrow_selected
+            `)
+}
+
+function deselect_right_arrow() {
+    
+    right_arrow.setImage(assets.image`
+            right_select_arrow
+                `)
+}
+
+function select_left_arrow() {
+    
+    right_arrow.setImage(assets.image`
+            right_arrow_selected
+            `)
+}
+
+function deselect_left_arrow() {
+    
+    right_arrow.setImage(assets.image`
+            right_select_arrow
+                `)
+}
+
+function select_continue_button() {
+    
+    continue_button.setImage(assets.image`
+            right_select_arrow
+                    `)
+}
+
+function deselect_continue_button() {
+    
+    continue_button.setImage(assets.image`
+            right_select_arrow
+                    `)
+}
+
 function confirm_before_proceeding(msg: string) {
     game.splash(msg)
 }
@@ -1346,18 +1423,15 @@ let player_exp = 0
 let player_exp_required = 0
 let player_coins = 0
 let player_points = 0
-// # Player stats menu sprites
-let stats_player_name_sprite : Sprite = null
-let stats_player_level_sprite : Sprite = null
-let stats_player_exp_bar_sprite : Sprite = null
-let stats_player_points_sprite : Sprite = null
-let stats_player_coins_sprite : Sprite = null
-let stats_player_hp_sprite : Sprite = null
-let stats_player_power_sprite : Sprite = null
-let stats_player_talent_sprite : Sprite = null
-let stats_player_luck_sprite : Sprite = null
+// # Player stats menu assets
+let right_arrow : Sprite = null
+let left_arrow : Sprite = null
+let continue_button : Sprite = null
+let right_arrow_selected = false
+let left_arrow_selected = false
+let continue_button_selected = true
 //  Level variables
-let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [20, 105]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45]), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15])]
+let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [20, 105], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15], "")]
 //  Level 1
 //  Level 2
 //  Level 3
@@ -1379,7 +1453,6 @@ let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
-let continue_button_selected = true
 let on_dev_mode = false
 //  Characters
 let characters = ["Knight", "Mage", "Assassin"]

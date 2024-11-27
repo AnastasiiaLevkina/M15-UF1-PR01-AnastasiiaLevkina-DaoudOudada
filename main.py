@@ -38,9 +38,10 @@ class Level():
     stars = 0
     background_img = ""
     level_music = ""
+    star_light = ""
     pos_on_map = []
     
-    def __init__(self, lvl_num, enemies, lvl_passed, lvl_opened, stars, bg, mus, pos):
+    def __init__(self, lvl_num, enemies, lvl_passed, lvl_opened, stars, bg, mus, pos, light):
         self.level_number = lvl_num
         self.enemy_appearance_order = enemies
         self.level_passed = lvl_passed
@@ -49,6 +50,7 @@ class Level():
         self.background_img = bg
         self.level_music = mus
         self.pos_on_map = pos
+        self.star_light = light
 
 
 #Controls
@@ -666,6 +668,23 @@ def level_completed():
     pass
 
 #UI components
+def create_stats_menu_sprites():
+    global continue_button, right_arrow, left_arrow
+    right_arrow = sprites.create(assets.image("""
+            right_select_arrow
+        """), SpriteKind.Asset)
+    scaling.scale_by_percent(right_arrow, -50, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+    right_arrow.set_position(62, 52)
+    right_arrow.z = 6
+
+    left_arrow = sprites.create(assets.image("""
+            left_select_arrow
+        """), SpriteKind.Asset)
+    scaling.scale_by_percent(left_arrow, -50, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+    left_arrow.set_position(13, 52)
+    left_arrow.z = 6
+
+
 def create_dev_mode_switch():
     global dev_mode_switch
 
@@ -775,7 +794,8 @@ def create_level_selector():
 def open_player_stats_menu():
     global player_level, player_hp, player_points, player_power
     global player_sprite, character_name
-    global player_stats_menu_opened
+    global right_arrow, left_arrow
+    global player_stats_menu_opened, right_arrow_selected, left_arrow_selected
 
     #Containers
     stats_main_container_sprite = sprites.create(img("""
@@ -966,7 +986,10 @@ def open_player_stats_menu():
     stats_player_container_sprite.set_position(37, 50)
     scaling.scale_by_percent(stats_player_container_sprite, -10, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
     
-    #Create_player
+    # Buttons
+    create_stats_menu_sprites()
+
+    # Create_player
     create_player()
     player_sprite.set_position(37, 52)
     # play idle animation
@@ -988,8 +1011,8 @@ def open_player_stats_menu():
     power_text.set_position(80, 50)
     power_text.z = 3
 
-    power_text = textsprite.create("PW")
-    power_text.set_position(80, 50)
+    power_text = textsprite.create("LUCK")
+    power_text.set_position(80, 30)
     power_text.z = 3
 
     player_hp_text = textsprite.create(str(player_hp))
@@ -997,6 +1020,10 @@ def open_player_stats_menu():
     player_hp_text.z = 3
 
     player_power_text = textsprite.create(str(player_power))
+    player_power_text.set_position(125, 50)
+    player_power_text.z = 3
+
+    player_power_text = textsprite.create(str(player_luck))
     player_power_text.set_position(125, 50)
     player_power_text.z = 3
 
@@ -1013,6 +1040,42 @@ def close_player_stats_menu():
 
     
 # Functions
+def select_right_arrow():
+    global right_arrow, right_arrow_selected
+    right_arrow.set_image(assets.image("""
+            right_arrow_selected
+            """))
+
+def deselect_right_arrow():
+    global right_arrow, right_arrow_selected
+    right_arrow.set_image(assets.image("""
+            right_select_arrow
+                """))
+
+def select_left_arrow():
+    global right_arrow, right_arrow_selected
+    right_arrow.set_image(assets.image("""
+            right_arrow_selected
+            """))
+
+def deselect_left_arrow():
+    global right_arrow, right_arrow_selected
+    right_arrow.set_image(assets.image("""
+            right_select_arrow
+                """))
+
+def select_continue_button():
+    global continue_button, continue_button_selected
+    continue_button.set_image(assets.image("""
+            right_select_arrow
+                    """))
+
+def deselect_continue_button():
+    global continue_button, continue_button_selected
+    continue_button.set_image(assets.image("""
+            right_select_arrow
+                    """))
+
 def confirm_before_proceeding(msg: str):
     game.splash(msg)
 
@@ -1134,36 +1197,34 @@ player_exp_required = 0
 player_coins = 0
 player_points = 0
 
-## Player stats menu sprites
-stats_player_name_sprite: Sprite = None
-stats_player_level_sprite: Sprite = None
-stats_player_exp_bar_sprite: Sprite = None
-stats_player_points_sprite: Sprite = None
-stats_player_coins_sprite: Sprite = None
-stats_player_hp_sprite: Sprite = None
-stats_player_power_sprite: Sprite = None
-stats_player_talent_sprite: Sprite = None
-stats_player_luck_sprite: Sprite = None
+## Player stats menu assets
+right_arrow: Sprite = None
+left_arrow: Sprite = None
+continue_button: Sprite = None
+
+right_arrow_selected = False
+left_arrow_selected = False
+continue_button_selected = True
 
 # Level variables
 campaign_levels = [
     Level( # Level 1
-        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (20, 105)
+        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (20, 105), ""
     ), 
     Level( # Level 2
-        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (59, 95)
+        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (59, 95), ""
     ),
     Level( # Level 3
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (96, 75)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (96, 75), ""
     ),
     Level( # Level 4
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (96, 45)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (96, 45), ""
     ),
     Level( # Level 5
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (46, 45)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (46, 45), ""
     ),
     Level( # Level 6
-            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (46, 15)
+            1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (46, 15), ""
     )
 ]
 level_selector: Sprite = None
@@ -1182,7 +1243,6 @@ choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
-continue_button_selected = True
 on_dev_mode = False
 
 # Characters
