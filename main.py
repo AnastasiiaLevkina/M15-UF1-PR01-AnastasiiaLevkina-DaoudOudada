@@ -1284,3 +1284,34 @@ open_main_screen()
   #      game.over(False)
 
 #sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_overlap)
+
+#desparar al llegar al centra
+enemy = sprites.create(img("""
+    . . . 5 5 5 . . .
+    . . 5 5 5 5 5 . .
+    . 5 5 5 5 5 5 5 .
+    . . 5 5 5 5 5 . .
+    . . . 5 5 5 . . .
+    . . . . 5 . . . .
+"""), SpriteKind.enemy)
+enemy.set_position(160, 90)
+# Mover al enemigo hacia la izquierda
+enemy.set_velocity(-50, 0)
+
+# Disparar automáticamente cuando el enemigo llegue al centro
+def stop_at_center():
+    if enemy.x <= 80:
+        enemy.set_velocity(0, 0)  # Detener al enemigo en el centro
+        shoot_projectile()  # Disparar automáticamente
+
+# Disparar proyectiles con velocidad reducida
+def shoot_projectile():
+    projectile = sprites.create_projectile_from_sprite(img("""
+    . . 4 . .
+    . 4 4 4 .
+    . . 4 . .
+    . . . . .
+    """), enemy, -50, 0)  # Cambiar la velocidad de -100 a -50 para hacerlo más lento
+
+# Ejecutar la función stop_at_center continuamente
+game.on_update(stop_at_center)
