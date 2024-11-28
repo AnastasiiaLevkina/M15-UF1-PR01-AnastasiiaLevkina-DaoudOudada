@@ -153,6 +153,16 @@ class Player {
         this.points += 1
     }
     
+    public add_char_bonus() {
+        this.hp *= 1.5
+        this.damage *= 1.3
+        this.luck *= 1.2
+    }
+    
+    public remove_char_bonus() {
+        
+    }
+    
 }
 
 Player.__initPlayer()
@@ -246,6 +256,17 @@ class Enemy {
         this.___delay = value
     }
     
+    static facing_right: boolean
+    private ___facing_right_is_set: boolean
+    private ___facing_right: boolean
+    get facing_right(): boolean {
+        return this.___facing_right_is_set ? this.___facing_right : Enemy.facing_right
+    }
+    set facing_right(value: boolean) {
+        this.___facing_right_is_set = true
+        this.___facing_right = value
+    }
+    
     public static __initEnemy() {
         Enemy.enemy_type = 0
         Enemy.health = 0
@@ -272,6 +293,7 @@ class Enemy {
         Enemy.pos_x = 0
         Enemy.pos_y = 0
         Enemy.delay = 0
+        Enemy.facing_right = false
     }
     
     constructor(t: number, hp: number, dg: number, sp: number, x: number, y: number) {
@@ -327,12 +349,20 @@ class Enemy_Type1 extends Enemy {
     
     public start_moving(player_x: number) {
         if (this.enemy_sprite.x > player_x) {
-            //  The enemy spawns at the left of the player
+            //  The enemy spawns at the right of the player
+            if (this.facing_right) {
+                this.enemy_sprite.image.flipX()
+                this.facing_right = false
+            }
+            
             this.enemy_sprite.setVelocity(this.speed * -1, 0)
         } else {
-            // while self.enemy_sprite.x - player_x > self.min_distance:
-            // pass
-            //  The enemy spawns at the right of the player
+            //  The enemy spawns at the left of the player
+            if (!this.facing_right) {
+                this.enemy_sprite.image.flipX()
+                this.facing_right = true
+            }
+            
             this.enemy_sprite.setVelocity(this.speed, 0)
         }
         
@@ -342,9 +372,6 @@ class Enemy_Type1 extends Enemy {
 
 Enemy_Type1.__initEnemy_Type1()
 
-// while self.enemy_sprite.x - player_x < self.min_distance:
-// pass
-// self.enemy_sprite.set_velocity(0, 0)
 class Enemy_Type2 extends Enemy {
     static hit_distance: number
     private ___hit_distance_is_set: boolean
@@ -1623,6 +1650,7 @@ function select_next_level() {
     if (selected_level < campaign_levels.length - 1) {
         selected_level += 1
         new_pos = campaign_levels[selected_level].pos_on_map
+        level_selector.setPosition(new_pos[0], new_pos[1])
     }
     
 }
@@ -1648,9 +1676,17 @@ function play_cutscene_1() {
 //  Play animations
 //  Enemies
 function spawn_enemy(enemy: Enemy) {
-    let enemy_sprite = sprites.create(assets.image`
-        enemy_1_sprite
-    `, SpriteKind.Enemy)
+    let enemy_sprite: Sprite;
+    if (enemy.enemy_type == 1) {
+        enemy_sprite = sprites.create(assets.image`
+            enemy_1_sprite
+        `, SpriteKind.Enemy)
+    } else if (enemy.enemy_type == 1) {
+        enemy_sprite = sprites.create(assets.image`
+            enemy_2_sprite
+        `, SpriteKind.Enemy)
+    }
+    
     enemy_sprite.setPosition(enemy.pos_x, enemy.pos_y)
     enemy.create_sprite(enemy_sprite)
 }
@@ -1760,10 +1796,19 @@ let knight_stats = set_knight_base_stats()
 let mage_stats = set_mage_base_stats()
 let assassin_stats = set_assassin_base_stats()
 //  Enemies
+//  Notes: 
+//  player_y = 100
+//  conventional x to put enemy on right = 150
+//  conventional x to put enemy on left = 0 ???
 let enemies_collection = {
     1 : new Enemy_Type1(1, 100, 10, 20, 150, 100, 10),
+    2 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
+    3 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
 }
 
+//  ghost coming from right
+//  ghost coming from left
+//  bat coming from right
 //  Music 
 // music.set_tempo(120)  # Aumentar el tempo
 // music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))

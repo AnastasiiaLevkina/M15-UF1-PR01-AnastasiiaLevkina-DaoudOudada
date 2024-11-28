@@ -38,6 +38,14 @@ class Player():
         self.exp_required *= 1.1
         self.points += 1
 
+    def add_char_bonus(self):
+        self.hp *= 1.5
+        self.damage *= 1.3
+        self.luck *= 1.2
+
+    def remove_char_bonus(self):
+        pass
+
 class Enemy():
     enemy_type = 0
     health = 0
@@ -64,6 +72,7 @@ class Enemy():
     pos_x = 0
     pos_y = 0
     delay = 0
+    facing_right = False
 
     def __init__(self, t, hp, dg, sp, x, y):
         self.enemy_type = t
@@ -93,15 +102,17 @@ class Enemy_Type1(Enemy): # Enemy that, approaching the player, stops moving and
         self.min_distance = dist
 
     def start_moving(self, player_x):
-        if self.enemy_sprite.x > player_x: # The enemy spawns at the left of the player
+        if self.enemy_sprite.x > player_x: # The enemy spawns at the right of the player
+            if self.facing_right:
+                self.enemy_sprite.image.flip_x()
+                self.facing_right = False
             self.enemy_sprite.set_velocity((self.speed * -1), 0)
-            #while self.enemy_sprite.x - player_x > self.min_distance:
-                #pass
-        else: # The enemy spawns at the right of the player
+
+        else: # The enemy spawns at the left of the player
+            if not self.facing_right:
+                self.enemy_sprite.image.flip_x()
+                self.facing_right = True
             self.enemy_sprite.set_velocity(self.speed, 0)
-            #while self.enemy_sprite.x - player_x < self.min_distance:
-                #pass
-        #self.enemy_sprite.set_velocity(0, 0)
             
 
 class Enemy_Type2(Enemy): # Enemy that passes the player without stopping and dealing damage when approaching
@@ -1226,6 +1237,7 @@ def select_next_level():
     if (selected_level < len(campaign_levels)-1):
         selected_level += 1
         new_pos = campaign_levels[selected_level].pos_on_map
+        level_selector.set_position(new_pos[0], new_pos[1])
 
 def select_previuous_level():
     global level_selector, selected_level, campaign_levels
@@ -1243,9 +1255,15 @@ def play_cutscene_1():
 
 # Enemies
 def spawn_enemy(enemy: Enemy):
-    enemy_sprite = sprites.create(assets.image("""
-        enemy_1_sprite
-    """), SpriteKind.enemy)
+    if enemy.enemy_type == 1:
+        enemy_sprite = sprites.create(assets.image("""
+            enemy_1_sprite
+        """), SpriteKind.enemy)
+    elif enemy.enemy_type == 1:
+        enemy_sprite = sprites.create(assets.image("""
+            enemy_2_sprite
+        """), SpriteKind.enemy)
+
     enemy_sprite.set_position(enemy.pos_x, enemy.pos_y)
     enemy.create_sprite(enemy_sprite)
 
@@ -1368,8 +1386,16 @@ mage_stats = set_mage_base_stats()
 assassin_stats = set_assassin_base_stats()
 
 # Enemies
+
+# Notes: 
+# player_y = 100
+# conventional x to put enemy on right = 150
+# conventional x to put enemy on left = 0 ???
+
 enemies_collection = {
-    1: Enemy_Type1(1, 100, 10, 20, 150, 100, 10)
+    1: Enemy_Type1(1, 100, 10, 20, 150, 100, 10), # ghost coming from right
+    2: Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # ghost coming from left
+    3: Enemy_Type1(1, 100, 10, 20, 20, 100, 10) # bat coming from right
 }
 
 # Music 
