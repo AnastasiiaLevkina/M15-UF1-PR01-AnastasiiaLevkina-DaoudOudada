@@ -5,28 +5,110 @@ class SpriteKind:
     Icon = SpriteKind.create()
     Asset = SpriteKind.create()
 
+class Player():
+    hp = 0
+    damage = 0
+    talent = 0
+    luck = 0
+    level = 0
+    exp = 0
+    exp_required = 0
+    coins = 0
+    points = 0
+    attack_delay = 0
+
+    def __init__ (self, hp, dm, tl, lk, lvl, exp, exp_req, cs, ps, delay):
+        self.hp = hp
+        self.damage = dm
+        self.talent = tl
+        self.luck = lk
+        self.level = lvl
+        self.exp = exp
+        self.exp_required = exp_req
+        self.coins = cs
+        self.points = ps
+        self.attack_delay
+
+    def recieve_damage(self, damage):
+        self.hp -= damage
+
+    def promote_to_next_level(self):
+        self.level += 1
+        self.exp = self.exp - self.exp_required
+        self.exp_required *= 1.1
+        self.points += 1
+
 class Enemy():
+    enemy_type = 0
     health = 0
     damage = 0
     speed = 0
+    enemy_sprite: Sprite = sprites.create(img("""
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    """), SpriteKind.player)
+    pos_x = 0
+    pos_y = 0
+    delay = 0
 
-    def __init__(self, hp, dg, sp):
+    def __init__(self, t, hp, dg, sp, x, y):
+        self.enemy_type = t
         self.health = hp
         self.damage = dg
         self.speed = sp
+        self.pos_x = x
+        self.pos_y = y
+
+    def create_sprite(self, sprite):
+        self.enemy_sprite = sprite
+
+    def set_sprite(self, sprite):
+        self.enemy_sprite = sprite
+
+    def recieve_damage(self, damage):
+        self.health -= damage
+
+    def die(self):
+        sprites.destroy(self.enemy_sprite)
 
 class Enemy_Type1(Enemy): # Enemy that, approaching the player, stops moving and starts attacking
     min_distance = 0
     
-    def __init__(self, hp, dg, sp, dist):
-        super().__init__(hp, dg, sp)
+    def __init__(self, t, hp, dg, sp, x, y, dist):
+        super().__init__(t, hp, dg, sp, x, y)
         self.min_distance = dist
+
+    def start_moving(self, player_x):
+        if self.enemy_sprite.x > player_x: # The enemy spawns at the left of the player
+            self.enemy_sprite.set_velocity((self.speed * -1), 0)
+            #while self.enemy_sprite.x - player_x > self.min_distance:
+                #pass
+        else: # The enemy spawns at the right of the player
+            self.enemy_sprite.set_velocity(self.speed, 0)
+            #while self.enemy_sprite.x - player_x < self.min_distance:
+                #pass
+        #self.enemy_sprite.set_velocity(0, 0)
+            
 
 class Enemy_Type2(Enemy): # Enemy that passes the player without stopping and dealing damage when approaching
     hit_distance = 0
     
-    def __init__(self, hp, dg, sp, dist):
-        super().__init__(hp, dg, sp)
+    def __init__(self, t, hp, dg, sp, x, y, dist):
+        super().__init__(t, hp, dg, sp, x, y)
         self.hit_distance = dist
 
 class Level():
@@ -653,7 +735,7 @@ def close_tower_mode():
         pass
 
 def play_level(level: Level):
-    global playing_level, player_sprite
+    global playing_level, player_sprite, enemies_collection
     if level.level_number == 1:
         play_cutscene_1()
     scene.set_background_image(assets.image("""
@@ -661,6 +743,9 @@ def play_level(level: Level):
     """))
     create_player()
     player_sprite.set_position(75, 100)
+    enemy = enemies_collection[1]
+    spawn_enemy(enemy)
+    launch_enemy_attack(enemy)
     # play idle animation for player
     playing_level = True
 
@@ -683,7 +768,6 @@ def create_stats_menu_sprites():
     scaling.scale_by_percent(left_arrow, -50, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
     left_arrow.set_position(13, 52)
     left_arrow.z = 6
-
 
 def create_dev_mode_switch():
     global dev_mode_switch
@@ -792,8 +876,7 @@ def create_level_selector():
     level_selector.set_position(selector_pos[0], selector_pos[1])
 
 def open_player_stats_menu():
-    global player_level, player_hp, player_points, player_power
-    global player_sprite, character_name
+    global player_sprite, player, character_name
     global right_arrow, left_arrow
     global player_stats_menu_opened, right_arrow_selected, left_arrow_selected
 
@@ -999,7 +1082,7 @@ def open_player_stats_menu():
     char_name_text.set_position(40, 20)
     char_name_text.z = 3
 
-    player_level_text = textsprite.create("LVL " + player_level)
+    player_level_text = textsprite.create("LVL " + player.level)
     player_level_text.set_position(120, 20)
     player_level_text.z = 3
 
@@ -1007,25 +1090,25 @@ def open_player_stats_menu():
     hp_text.set_position(80, 40)
     hp_text.z = 3
 
-    power_text = textsprite.create("PW")
-    power_text.set_position(80, 50)
-    power_text.z = 3
+    damage_text = textsprite.create("DM")
+    damage_text.set_position(80, 50)
+    damage_text.z = 3
 
-    power_text = textsprite.create("LUCK")
-    power_text.set_position(80, 30)
-    power_text.z = 3
+    luck_text = textsprite.create("LUCK")
+    luck_text.set_position(80, 60)
+    luck_text.z = 3
 
-    player_hp_text = textsprite.create(str(player_hp))
+    player_hp_text = textsprite.create(str(player.hp))
     player_hp_text.set_position(125, 40)
     player_hp_text.z = 3
 
-    player_power_text = textsprite.create(str(player_power))
+    player_power_text = textsprite.create(str(player.damage))
     player_power_text.set_position(125, 50)
     player_power_text.z = 3
 
-    player_power_text = textsprite.create(str(player_luck))
-    player_power_text.set_position(125, 50)
-    player_power_text.z = 3
+    luck_text = textsprite.create(str(player.luck))
+    luck_text.set_position(125, 60)
+    luck_text.z = 3
 
     player_stats_menu_opened = True
 
@@ -1093,25 +1176,56 @@ def set_cursor_facing_right():
         choose_tower_mode = True
         choose_campaign_mode = False
 
-def init_player_stats():
-    global player_level, player_exp, player_exp_required, player_hp, player_power, player_talent, player_luck, player_coins
-    player_level = 1
-    player_exp = 0
-    player_exp_required = 100
-    player_points = 3
+def set_knight_base_stats():
+    knight_data = Player (
+        125, # health
+        20, # damage
+        5, # talent
+        5, # luck
+        1, # level
+        0, # exp
+        100, # exp required
+        0, # coins
+        0, # points
+        200 # attack delay
+    )
+    return knight_data
 
-    player_hp = 100
-    player_power = 5
-    player_talent = 5
-    player_luck = 3
-    player_coins = 0
+def set_mage_base_stats():
+    mage_data = Player (
+        65, # health
+        15, # damage
+        10, # talent
+        5, # luck
+        1, # level
+        0, # exp
+        100, # exp required
+        0, # coins
+        0, # points
+        150 # attack delay
+    )
+    return mage_data
+
+def set_assassin_base_stats():
+    assassin_data = Player (
+        75, # health
+        20, # damage
+        7, # talent
+        10, # luck
+        1, # level
+        0, # exp
+        100, # exp required
+        0, # coins
+        0, # points
+        50 # attack delay
+    )
+    return assassin_data
 
 def select_next_level():
     global level_selector, selected_level, campaign_levels
     if (selected_level < len(campaign_levels)-1):
         selected_level += 1
         new_pos = campaign_levels[selected_level].pos_on_map
-        level_selector.set_position(new_pos[0], new_pos[1])
 
 def select_previuous_level():
     global level_selector, selected_level, campaign_levels
@@ -1120,13 +1234,6 @@ def select_previuous_level():
         new_pos = campaign_levels[selected_level].pos_on_map
         level_selector.set_position(new_pos[0], new_pos[1])
 
-def promote_to_next_level():
-    global player_level, player_exp, player_exp_required, player_points
-    player_level += 1
-    player_exp = player_exp - player_exp_required
-    player_exp_required *= 1.1
-    player_points += 1
-
 def play_cutscene_1():
     scene.set_background_image(assets.image("""
             cutscene_bg_1
@@ -1134,18 +1241,37 @@ def play_cutscene_1():
     # Create assets sprites (no need for global vars)
     # Play animations
 
+# Enemies
+def spawn_enemy(enemy: Enemy):
+    enemy_sprite = sprites.create(assets.image("""
+        enemy_1_sprite
+    """), SpriteKind.enemy)
+    enemy_sprite.set_position(enemy.pos_x, enemy.pos_y)
+    enemy.create_sprite(enemy_sprite)
+
+def launch_enemy_attack(enemy: Enemy_Type1):
+    global player_sprite
+    player_x = player_sprite.x
+
+    pause(enemy.delay)
+    enemy.start_moving(player_x)
+
 #Characters
 def create_player():
-    global characters, character_name, player_sprite, mage_sprite, knight_sprite, assassin_sprite, selected_character, player_facing_right
+    global player, knight_stats, mage_stats, assassin_stats, characters, character_name, selected_character, player_facing_right
+    global player_sprite, mage_sprite, knight_sprite, assassin_sprite
     if (selected_character == 0):
         create_knight_sprite()
         player_sprite = knight_sprite
+        player = knight_stats
     elif (selected_character == 1):
         create_mage_sprite()
         player_sprite = mage_sprite
+        player = mage_stats
     elif (selected_character):
         create_assassin_sprite()
         player_sprite = assassin_sprite
+        player = assassin_stats
     character_name = characters[selected_character]
 
     player_sprite.z = 5
@@ -1184,18 +1310,6 @@ cursor: Sprite = None
 mode_b: Sprite = None
 mode_a: Sprite = None
 dev_mode_switch: Sprite = None
-
-# Player stats
-player_char_name = ""
-player_hp = 0
-player_power = 0
-player_talent = 0
-player_luck = 0
-player_level = 0
-player_exp = 0
-player_exp_required = 0
-player_coins = 0
-player_points = 0
 
 ## Player stats menu assets
 right_arrow: Sprite = None
@@ -1249,6 +1363,14 @@ on_dev_mode = False
 characters = ["Knight", "Mage", "Assassin"]
 character_name = ""
 selected_character = 0
+knight_stats = set_knight_base_stats()
+mage_stats = set_mage_base_stats()
+assassin_stats = set_assassin_base_stats()
+
+# Enemies
+enemies_collection = {
+    1: Enemy_Type1(1, 100, 10, 20, 150, 100, 10)
+}
 
 # Music 
 #music.set_tempo(120)  # Aumentar el tempo
@@ -1260,58 +1382,10 @@ selected_character = 0
 #music.play_melody("F3 G3 A3 F3 G3 C3 A2", 100)  # Cambio en las notas para una sensación más energética
 #music.play_melody("C3 E3 G3 F3 E3 D3 C3 B2", 100)  # Mantener el ritmo pero variando un poco
 
+# Player
+player = set_knight_base_stats()
+
 # On start
-init_player_stats()
 open_main_screen()
 
 
-#info.set_life(3)
-
-# Detectar colisiones y reducir vidas
-#def on_overlap(sprite, otherSprite):
-    # Reducir vidas en 1
- #   info.change_life_by(-1)
-    # Si aún tiene vidas, volver a la posición inicial
-  #  if info.life() > 0:
-    # Si aún tiene vidas,volver el jugador a la posicion inicial por ejemplo
-        # Si aún tiene vidas, volver a la posición inicial
-        #por ejemplo que el jugador vuelva a su posicion inicial
-      #  sprite.set_position(player_start_x, player_start_y)
-
-
-    # Si las vidas llegan a 0, terminar el juego
-   # else:
-  #      game.over(False)
-
-#sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_overlap)
-
-#desparar al llegar al centra
-enemy = sprites.create(img("""
-    . . . 5 5 5 . . .
-    . . 5 5 5 5 5 . .
-    . 5 5 5 5 5 5 5 .
-    . . 5 5 5 5 5 . .
-    . . . 5 5 5 . . .
-    . . . . 5 . . . .
-"""), SpriteKind.enemy)
-enemy.set_position(160, 90)
-# Mover al enemigo hacia la izquierda
-enemy.set_velocity(-50, 0)
-
-# Disparar automáticamente cuando el enemigo llegue al centro
-def stop_at_center():
-    if enemy.x <= 80:
-        enemy.set_velocity(0, 0)  # Detener al enemigo en el centro
-        shoot_projectile()  # Disparar automáticamente
-
-# Disparar proyectiles con velocidad reducida
-def shoot_projectile():
-    projectile = sprites.create_projectile_from_sprite(img("""
-    . . 4 . .
-    . 4 4 4 .
-    . . 4 . .
-    . . . . .
-    """), enemy, -50, 0)  # Cambiar la velocidad de -100 a -50 para hacerlo más lento
-
-# Ejecutar la función stop_at_center continuamente
-game.on_update(stop_at_center)

@@ -5,7 +5,170 @@ namespace SpriteKind {
     export const Asset = SpriteKind.create()
 }
 
+class Player {
+    static hp: number
+    private ___hp_is_set: boolean
+    private ___hp: number
+    get hp(): number {
+        return this.___hp_is_set ? this.___hp : Player.hp
+    }
+    set hp(value: number) {
+        this.___hp_is_set = true
+        this.___hp = value
+    }
+    
+    static damage: number
+    private ___damage_is_set: boolean
+    private ___damage: number
+    get damage(): number {
+        return this.___damage_is_set ? this.___damage : Player.damage
+    }
+    set damage(value: number) {
+        this.___damage_is_set = true
+        this.___damage = value
+    }
+    
+    static talent: number
+    private ___talent_is_set: boolean
+    private ___talent: number
+    get talent(): number {
+        return this.___talent_is_set ? this.___talent : Player.talent
+    }
+    set talent(value: number) {
+        this.___talent_is_set = true
+        this.___talent = value
+    }
+    
+    static luck: number
+    private ___luck_is_set: boolean
+    private ___luck: number
+    get luck(): number {
+        return this.___luck_is_set ? this.___luck : Player.luck
+    }
+    set luck(value: number) {
+        this.___luck_is_set = true
+        this.___luck = value
+    }
+    
+    static level: number
+    private ___level_is_set: boolean
+    private ___level: number
+    get level(): number {
+        return this.___level_is_set ? this.___level : Player.level
+    }
+    set level(value: number) {
+        this.___level_is_set = true
+        this.___level = value
+    }
+    
+    static exp: number
+    private ___exp_is_set: boolean
+    private ___exp: number
+    get exp(): number {
+        return this.___exp_is_set ? this.___exp : Player.exp
+    }
+    set exp(value: number) {
+        this.___exp_is_set = true
+        this.___exp = value
+    }
+    
+    static exp_required: number
+    private ___exp_required_is_set: boolean
+    private ___exp_required: number
+    get exp_required(): number {
+        return this.___exp_required_is_set ? this.___exp_required : Player.exp_required
+    }
+    set exp_required(value: number) {
+        this.___exp_required_is_set = true
+        this.___exp_required = value
+    }
+    
+    static coins: number
+    private ___coins_is_set: boolean
+    private ___coins: number
+    get coins(): number {
+        return this.___coins_is_set ? this.___coins : Player.coins
+    }
+    set coins(value: number) {
+        this.___coins_is_set = true
+        this.___coins = value
+    }
+    
+    static points: number
+    private ___points_is_set: boolean
+    private ___points: number
+    get points(): number {
+        return this.___points_is_set ? this.___points : Player.points
+    }
+    set points(value: number) {
+        this.___points_is_set = true
+        this.___points = value
+    }
+    
+    static attack_delay: number
+    private ___attack_delay_is_set: boolean
+    private ___attack_delay: number
+    get attack_delay(): number {
+        return this.___attack_delay_is_set ? this.___attack_delay : Player.attack_delay
+    }
+    set attack_delay(value: number) {
+        this.___attack_delay_is_set = true
+        this.___attack_delay = value
+    }
+    
+    public static __initPlayer() {
+        Player.hp = 0
+        Player.damage = 0
+        Player.talent = 0
+        Player.luck = 0
+        Player.level = 0
+        Player.exp = 0
+        Player.exp_required = 0
+        Player.coins = 0
+        Player.points = 0
+        Player.attack_delay = 0
+    }
+    
+    constructor(hp: number, dm: number, tl: number, lk: number, lvl: number, exp: number, exp_req: number, cs: number, ps: number, delay: number) {
+        this.hp = hp
+        this.damage = dm
+        this.talent = tl
+        this.luck = lk
+        this.level = lvl
+        this.exp = exp
+        this.exp_required = exp_req
+        this.coins = cs
+        this.points = ps
+        this.attack_delay
+    }
+    
+    public recieve_damage(damage: any) {
+        this.hp -= damage
+    }
+    
+    public promote_to_next_level() {
+        this.level += 1
+        this.exp = this.exp - this.exp_required
+        this.exp_required *= 1.1
+        this.points += 1
+    }
+    
+}
+
+Player.__initPlayer()
+
 class Enemy {
+    static enemy_type: number
+    private ___enemy_type_is_set: boolean
+    private ___enemy_type: number
+    get enemy_type(): number {
+        return this.___enemy_type_is_set ? this.___enemy_type : Enemy.enemy_type
+    }
+    set enemy_type(value: number) {
+        this.___enemy_type_is_set = true
+        this.___enemy_type = value
+    }
+    
     static health: number
     private ___health_is_set: boolean
     private ___health: number
@@ -39,16 +202,101 @@ class Enemy {
         this.___speed = value
     }
     
+    static pos_x: number
+    private ___pos_x_is_set: boolean
+    private ___pos_x: number
+    get pos_x(): number {
+        return this.___pos_x_is_set ? this.___pos_x : Enemy.pos_x
+    }
+    set pos_x(value: number) {
+        this.___pos_x_is_set = true
+        this.___pos_x = value
+    }
+    
+    static pos_y: number
+    private ___pos_y_is_set: boolean
+    private ___pos_y: number
+    get pos_y(): number {
+        return this.___pos_y_is_set ? this.___pos_y : Enemy.pos_y
+    }
+    set pos_y(value: number) {
+        this.___pos_y_is_set = true
+        this.___pos_y = value
+    }
+    
+    static enemy_sprite: Sprite
+    private ___enemy_sprite_is_set: boolean
+    private ___enemy_sprite: Sprite
+    get enemy_sprite(): Sprite {
+        return this.___enemy_sprite_is_set ? this.___enemy_sprite : Enemy.enemy_sprite
+    }
+    set enemy_sprite(value: Sprite) {
+        this.___enemy_sprite_is_set = true
+        this.___enemy_sprite = value
+    }
+    
+    static delay: number
+    private ___delay_is_set: boolean
+    private ___delay: number
+    get delay(): number {
+        return this.___delay_is_set ? this.___delay : Enemy.delay
+    }
+    set delay(value: number) {
+        this.___delay_is_set = true
+        this.___delay = value
+    }
+    
     public static __initEnemy() {
+        Enemy.enemy_type = 0
         Enemy.health = 0
         Enemy.damage = 0
         Enemy.speed = 0
+        Enemy.enemy_sprite = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Player)
+        Enemy.pos_x = 0
+        Enemy.pos_y = 0
+        Enemy.delay = 0
     }
     
-    constructor(hp: number, dg: number, sp: number) {
+    constructor(t: number, hp: number, dg: number, sp: number, x: number, y: number) {
+        this.enemy_type = t
         this.health = hp
         this.damage = dg
         this.speed = sp
+        this.pos_x = x
+        this.pos_y = y
+    }
+    
+    public create_sprite(sprite: Sprite) {
+        this.enemy_sprite = sprite
+    }
+    
+    public set_sprite(sprite: Sprite) {
+        this.enemy_sprite = sprite
+    }
+    
+    public recieve_damage(damage: any) {
+        this.health -= damage
+    }
+    
+    public die() {
+        sprites.destroy(this.enemy_sprite)
     }
     
 }
@@ -72,15 +320,31 @@ class Enemy_Type1 extends Enemy {
         Enemy_Type1.min_distance = 0
     }
     
-    constructor(hp: number, dg: number, sp: number, dist: number) {
-        super(hp, dg, sp)
+    constructor(t: number, hp: number, dg: number, sp: number, x: number, y: number, dist: number) {
+        super(t, hp, dg, sp, x, y)
         this.min_distance = dist
+    }
+    
+    public start_moving(player_x: number) {
+        if (this.enemy_sprite.x > player_x) {
+            //  The enemy spawns at the left of the player
+            this.enemy_sprite.setVelocity(this.speed * -1, 0)
+        } else {
+            // while self.enemy_sprite.x - player_x > self.min_distance:
+            // pass
+            //  The enemy spawns at the right of the player
+            this.enemy_sprite.setVelocity(this.speed, 0)
+        }
+        
     }
     
 }
 
 Enemy_Type1.__initEnemy_Type1()
 
+// while self.enemy_sprite.x - player_x < self.min_distance:
+// pass
+// self.enemy_sprite.set_velocity(0, 0)
 class Enemy_Type2 extends Enemy {
     static hit_distance: number
     private ___hit_distance_is_set: boolean
@@ -98,8 +362,8 @@ class Enemy_Type2 extends Enemy {
         Enemy_Type2.hit_distance = 0
     }
     
-    constructor(hp: number, dg: number, sp: number, dist: number) {
-        super(hp, dg, sp)
+    constructor(t: number, hp: number, dg: number, sp: number, x: number, y: number, dist: number) {
+        super(t, hp, dg, sp, x, y)
         this.hit_distance = dist
     }
     
@@ -873,6 +1137,9 @@ function play_level(level: Level) {
     `)
     create_player()
     player_sprite.setPosition(75, 100)
+    let enemy = enemies_collection[1]
+    spawn_enemy(enemy)
+    launch_enemy_attack(enemy)
     //  play idle animation for player
     playing_level = true
 }
@@ -1010,7 +1277,6 @@ function create_level_selector() {
 }
 
 function open_player_stats_menu() {
-    
     
     
     
@@ -1207,27 +1473,27 @@ function open_player_stats_menu() {
     let char_name_text = textsprite.create(character_name)
     char_name_text.setPosition(40, 20)
     char_name_text.z = 3
-    let player_level_text = textsprite.create("LVL " + player_level)
+    let player_level_text = textsprite.create("LVL " + player.level)
     player_level_text.setPosition(120, 20)
     player_level_text.z = 3
     let hp_text = textsprite.create("HP")
     hp_text.setPosition(80, 40)
     hp_text.z = 3
-    let power_text = textsprite.create("PW")
-    power_text.setPosition(80, 50)
-    power_text.z = 3
-    power_text = textsprite.create("LUCK")
-    power_text.setPosition(80, 30)
-    power_text.z = 3
-    let player_hp_text = textsprite.create("" + player_hp)
+    let damage_text = textsprite.create("DM")
+    damage_text.setPosition(80, 50)
+    damage_text.z = 3
+    let luck_text = textsprite.create("LUCK")
+    luck_text.setPosition(80, 60)
+    luck_text.z = 3
+    let player_hp_text = textsprite.create("" + player.hp)
     player_hp_text.setPosition(125, 40)
     player_hp_text.z = 3
-    let player_power_text = textsprite.create("" + player_power)
+    let player_power_text = textsprite.create("" + player.damage)
     player_power_text.setPosition(125, 50)
     player_power_text.z = 3
-    player_power_text = textsprite.create("" + player_luck)
-    player_power_text.setPosition(125, 50)
-    player_power_text.z = 3
+    luck_text = textsprite.create("" + player.luck)
+    luck_text.setPosition(125, 60)
+    luck_text.z = 3
     player_stats_menu_opened = true
 }
 
@@ -1306,17 +1572,49 @@ function set_cursor_facing_right() {
     
 }
 
-function init_player_stats() {
-    
-    player_level = 1
-    player_exp = 0
-    player_exp_required = 100
-    let player_points = 3
-    player_hp = 100
-    player_power = 5
-    player_talent = 5
-    player_luck = 3
-    player_coins = 0
+function set_knight_base_stats(): Player {
+    let knight_data = new Player(125, 20, 5, 5, 1, 0, 100, 0, 0, 200)
+    //  health
+    //  damage
+    //  talent
+    //  luck
+    //  level
+    //  exp
+    //  exp required
+    //  coins
+    //  points
+    //  attack delay
+    return knight_data
+}
+
+function set_mage_base_stats(): Player {
+    let mage_data = new Player(65, 15, 10, 5, 1, 0, 100, 0, 0, 150)
+    //  health
+    //  damage
+    //  talent
+    //  luck
+    //  level
+    //  exp
+    //  exp required
+    //  coins
+    //  points
+    //  attack delay
+    return mage_data
+}
+
+function set_assassin_base_stats(): Player {
+    let assassin_data = new Player(75, 20, 7, 10, 1, 0, 100, 0, 0, 50)
+    //  health
+    //  damage
+    //  talent
+    //  luck
+    //  level
+    //  exp
+    //  exp required
+    //  coins
+    //  points
+    //  attack delay
+    return assassin_data
 }
 
 function select_next_level() {
@@ -1325,7 +1623,6 @@ function select_next_level() {
     if (selected_level < campaign_levels.length - 1) {
         selected_level += 1
         new_pos = campaign_levels[selected_level].pos_on_map
-        level_selector.setPosition(new_pos[0], new_pos[1])
     }
     
 }
@@ -1341,14 +1638,6 @@ function select_previuous_level() {
     
 }
 
-function promote_to_next_level() {
-    
-    player_level += 1
-    player_exp = player_exp - player_exp_required
-    player_exp_required *= 1.1
-    player_points += 1
-}
-
 function play_cutscene_1() {
     scene.setBackgroundImage(assets.image`
             cutscene_bg_1
@@ -1357,18 +1646,38 @@ function play_cutscene_1() {
 
 //  Create assets sprites (no need for global vars)
 //  Play animations
+//  Enemies
+function spawn_enemy(enemy: Enemy) {
+    let enemy_sprite = sprites.create(assets.image`
+        enemy_1_sprite
+    `, SpriteKind.Enemy)
+    enemy_sprite.setPosition(enemy.pos_x, enemy.pos_y)
+    enemy.create_sprite(enemy_sprite)
+}
+
+function launch_enemy_attack(enemy: Enemy_Type1) {
+    
+    let player_x = player_sprite.x
+    pause(enemy.delay)
+    enemy.start_moving(player_x)
+}
+
 // Characters
 function create_player() {
+    
     
     if (selected_character == 0) {
         create_knight_sprite()
         player_sprite = knight_sprite
+        player = knight_stats
     } else if (selected_character == 1) {
         create_mage_sprite()
         player_sprite = mage_sprite
+        player = mage_stats
     } else if (selected_character) {
         create_assassin_sprite()
         player_sprite = assassin_sprite
+        player = assassin_stats
     }
     
     character_name = characters[selected_character]
@@ -1412,17 +1721,6 @@ let cursor : Sprite = null
 let mode_b : Sprite = null
 let mode_a : Sprite = null
 let dev_mode_switch : Sprite = null
-//  Player stats
-let player_char_name = ""
-let player_hp = 0
-let player_power = 0
-let player_talent = 0
-let player_luck = 0
-let player_level = 0
-let player_exp = 0
-let player_exp_required = 0
-let player_coins = 0
-let player_points = 0
 // # Player stats menu assets
 let right_arrow : Sprite = null
 let left_arrow : Sprite = null
@@ -1458,6 +1756,14 @@ let on_dev_mode = false
 let characters = ["Knight", "Mage", "Assassin"]
 let character_name = ""
 let selected_character = 0
+let knight_stats = set_knight_base_stats()
+let mage_stats = set_mage_base_stats()
+let assassin_stats = set_assassin_base_stats()
+//  Enemies
+let enemies_collection = {
+    1 : new Enemy_Type1(1, 100, 10, 20, 150, 100, 10),
+}
+
 //  Music 
 // music.set_tempo(120)  # Aumentar el tempo
 // music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))
@@ -1467,55 +1773,7 @@ let selected_character = 0
 // music.play_melody("C3 G3 E3 F3 D3 C3 A2 G2", 120)  # Cambio en el patrón para mayor dinamismo
 // music.play_melody("F3 G3 A3 F3 G3 C3 A2", 100)  # Cambio en las notas para una sensación más energética
 // music.play_melody("C3 E3 G3 F3 E3 D3 C3 B2", 100)  # Mantener el ritmo pero variando un poco
+//  Player
+let player = set_knight_base_stats()
 //  On start
-init_player_stats()
 open_main_screen()
-// info.set_life(3)
-//  Detectar colisiones y reducir vidas
-// def on_overlap(sprite, otherSprite):
-//  Reducir vidas en 1
-//    info.change_life_by(-1)
-//  Si aún tiene vidas, volver a la posición inicial
-//   if info.life() > 0:
-//  Si aún tiene vidas,volver el jugador a la posicion inicial por ejemplo
-//  Si aún tiene vidas, volver a la posición inicial
-// por ejemplo que el jugador vuelva a su posicion inicial
-//   sprite.set_position(player_start_x, player_start_y)
-//  Si las vidas llegan a 0, terminar el juego
-//  else:
-//       game.over(False)
-// sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_overlap)
-// desparar al llegar al centra
-let enemy = sprites.create(img`
-    . . . 5 5 5 . . .
-    . . 5 5 5 5 5 . .
-    . 5 5 5 5 5 5 5 .
-    . . 5 5 5 5 5 . .
-    . . . 5 5 5 . . .
-    . . . . 5 . . . .
-`, SpriteKind.Enemy)
-enemy.setPosition(160, 90)
-//  Mover al enemigo hacia la izquierda
-enemy.setVelocity(-50, 0)
-//  Disparar automáticamente cuando el enemigo llegue al centro
-//  Disparar automáticamente
-//  Disparar proyectiles con velocidad reducida
-function shoot_projectile() {
-    let projectile = sprites.createProjectileFromSprite(img`
-    . . 4 . .
-    . 4 4 4 .
-    . . 4 . .
-    . . . . .
-    `, enemy, -50, 0)
-}
-
-//  Cambiar la velocidad de -100 a -50 para hacerlo más lento
-//  Ejecutar la función stop_at_center continuamente
-game.onUpdate(function stop_at_center() {
-    if (enemy.x <= 80) {
-        enemy.setVelocity(0, 0)
-        //  Detener al enemigo en el centro
-        shoot_projectile()
-    }
-    
-})
