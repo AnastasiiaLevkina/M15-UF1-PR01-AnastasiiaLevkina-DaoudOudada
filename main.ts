@@ -873,7 +873,14 @@ function open_level_map() {
         scaling.scaleByPercent(level_sprite, -70, ScaleDirection.Uniformly, ScaleAnchor.Middle)
         level_sprite.setPosition(lvl.pos_on_map[0], lvl.pos_on_map[1])
         lvl_num = textsprite.create("" + level_num)
-        lvl_num.setPosition(lvl.pos_on_map[0], lvl.pos_on_map[1])
+        lvl_num.setPosition(lvl.pos_on_map[0] - 1, lvl.pos_on_map[1] - 1)
+        //  need a bit of adjusting
+        if (lvl.level_passed) {
+            lvl_num.setOutline(1, 4)
+        } else if (lvl.level_opened) {
+            lvl_num.setOutline(1, 3)
+        }
+        
     }
     create_level_selector()
     on_level_map_screen = true
@@ -1648,9 +1655,12 @@ function select_next_level() {
     let new_pos: number[];
     
     if (selected_level < campaign_levels.length - 1) {
-        selected_level += 1
-        new_pos = campaign_levels[selected_level].pos_on_map
-        level_selector.setPosition(new_pos[0], new_pos[1])
+        if (campaign_levels[selected_level + 1].level_opened) {
+            selected_level += 1
+            new_pos = campaign_levels[selected_level].pos_on_map
+            level_selector.setPosition(new_pos[0], new_pos[1])
+        }
+        
     }
     
 }

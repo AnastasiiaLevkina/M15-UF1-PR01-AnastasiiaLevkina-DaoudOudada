@@ -470,7 +470,11 @@ def open_level_map():
         scaling.scale_by_percent(level_sprite, -70, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
         level_sprite.set_position(lvl.pos_on_map[0], lvl.pos_on_map[1])
         lvl_num = textsprite.create(str(level_num))
-        lvl_num.set_position(lvl.pos_on_map[0], lvl.pos_on_map[1])
+        lvl_num.set_position(lvl.pos_on_map[0] - 1, lvl.pos_on_map[1] - 1) # need a bit of adjusting
+        if lvl.level_passed:
+            lvl_num.set_outline(1, 4)
+        elif lvl.level_opened:
+            lvl_num.set_outline(1, 3)
     create_level_selector()
     on_level_map_screen = True
 
@@ -1234,10 +1238,11 @@ def set_assassin_base_stats():
 
 def select_next_level():
     global level_selector, selected_level, campaign_levels
-    if (selected_level < len(campaign_levels)-1):
-        selected_level += 1
-        new_pos = campaign_levels[selected_level].pos_on_map
-        level_selector.set_position(new_pos[0], new_pos[1])
+    if selected_level < len(campaign_levels)-1:
+        if campaign_levels[selected_level + 1].level_opened:
+            selected_level += 1
+            new_pos = campaign_levels[selected_level].pos_on_map
+            level_selector.set_position(new_pos[0], new_pos[1])
 
 def select_previuous_level():
     global level_selector, selected_level, campaign_levels
