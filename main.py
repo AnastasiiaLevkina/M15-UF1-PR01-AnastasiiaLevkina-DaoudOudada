@@ -775,7 +775,7 @@ def level_completed():
 
 #UI components
 def create_stats_menu_sprites():
-    global continue_button, right_arrow, left_arrow
+    global continue_button, right_arrow, left_arrow, continue_button
     right_arrow = sprites.create(assets.image("""
             right_select_arrow
         """), SpriteKind.Asset)
@@ -789,6 +789,17 @@ def create_stats_menu_sprites():
     scaling.scale_by_percent(left_arrow, -50, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
     left_arrow.set_position(13, 52)
     left_arrow.z = 6
+
+    continue_button = sprites.create(assets.image("""
+            continue_button
+        """), SpriteKind.Asset)
+    scaling.scale_by_percent(continue_button, 40, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+    continue_button.set_position(120, 90)
+    continue_button.z = 6
+
+    continue_text = textsprite.create("CONTINUE")
+    continue_text.set_position(120, 90)
+    continue_text.z = 6
 
 def create_dev_mode_switch():
     global dev_mode_switch
@@ -1350,7 +1361,11 @@ continue_button_selected = True
 # Level variables
 campaign_levels = [
     Level( # Level 1
-        1, [[1, 500], [3, 750], [2, 600], [4, 500], [1, 500]], False, True, 0, "game_logo_bg", "", (20, 105), ""
+        1, [
+            [1, 500], [3, 750], [2, 600], [4, 500], [1, 500],
+            [1, 500], [3, 750], [2, 600], [4, 500], [1, 500], 
+            [1, 500], [3, 750], [2, 600], [4, 500], [1, 500]
+        ], False, True, 0, "game_logo_bg", "", (20, 105), ""
     ), 
     Level( # Level 2
         1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (59, 95), ""

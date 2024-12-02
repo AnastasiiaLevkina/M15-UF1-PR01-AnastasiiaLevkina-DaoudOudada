@@ -1202,6 +1202,15 @@ function create_stats_menu_sprites() {
     scaling.scaleByPercent(left_arrow, -50, ScaleDirection.Uniformly, ScaleAnchor.Middle)
     left_arrow.setPosition(13, 52)
     left_arrow.z = 6
+    continue_button = sprites.create(assets.image`
+            continue_button
+        `, SpriteKind.Asset)
+    scaling.scaleByPercent(continue_button, 40, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    continue_button.setPosition(120, 90)
+    continue_button.z = 6
+    let continue_text = textsprite.create("CONTINUE")
+    continue_text.setPosition(120, 90)
+    continue_text.z = 6
 }
 
 function create_dev_mode_switch() {
@@ -1779,7 +1788,7 @@ let right_arrow_selected = false
 let left_arrow_selected = false
 let continue_button_selected = true
 //  Level variables
-let campaign_levels = [new Level(1, [[1, 500], [3, 750], [2, 600], [4, 500], [1, 500]], false, true, 0, "game_logo_bg", "", [20, 105], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15], "")]
+let campaign_levels = [new Level(1, [[1, 500], [3, 750], [2, 600], [4, 500], [1, 500], [1, 500], [3, 750], [2, 600], [4, 500], [1, 500], [1, 500], [3, 750], [2, 600], [4, 500], [1, 500]], false, true, 0, "game_logo_bg", "", [20, 105], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15], "")]
 //  Level 1
 //  Level 2
 //  Level 3
