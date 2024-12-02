@@ -114,15 +114,15 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "plus_sprite_selected"
     },
-    "image20": {
-        "data": "hwQnABMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmZmZmZmZmQkAAAAAmZmZmZmZmQkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmWZmZmZmlgkAAAAAmZmZmZmZmQkAAAAAmZmZmZmZmQkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-        "mimeType": "image/x-mkcd-f4",
-        "displayName": "continue_button_selected"
-    },
     "image21": {
         "data": "hwQjAA8AAACIiIiIiIiICIiIiIiIiIgIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIZmZmZmaGCIhmZmZmZoYIiGZmZmZmhgiIiIiIiIiICIiIiIiIiIgI",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "continue_button"
+    },
+    "image20": {
+        "data": "hwQnABMAAAAREREREREREREBAAAREREREREREREBAAARiIiIiIiIiBgBAAARiIiIiIiIiBgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiGZmZmZmhhgBAAARiIiIiIiIiBgBAAARiIiIiIiIiBgBAAAREREREREREREBAAAREREREREREREBAAA=",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "continue_button_selected"
     },
     "*": {
         "mimeType": "image/x-mkcd-f4",

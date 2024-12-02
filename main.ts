@@ -612,6 +612,9 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed(
     }
     
 })
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
+    sprite.setVelocity(0, 0)
+})
 function attack_left() {
     
     if (player_facing_right) {
@@ -1669,7 +1672,7 @@ function select_next_level() {
     let new_pos: number[];
     
     if (selected_level < campaign_levels.length - 1) {
-        if (campaign_levels[selected_level + 1].level_opened) {
+        if (campaign_levels[selected_level + 1].level_opened || on_dev_mode) {
             selected_level += 1
             new_pos = campaign_levels[selected_level].pos_on_map
             level_selector.setPosition(new_pos[0], new_pos[1])
@@ -1810,7 +1813,7 @@ let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
-let on_dev_mode = false
+let on_dev_mode = true
 //  Characters
 let characters = ["Knight", "Mage", "Assassin"]
 let character_name = ""

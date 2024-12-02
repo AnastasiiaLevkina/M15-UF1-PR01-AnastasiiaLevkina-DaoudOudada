@@ -221,6 +221,10 @@ def on_down_pressed():
         select_previuous_level()
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
+def on_on_overlap(sprite, otherSprite):
+    sprite.set_velocity(0, 0)
+sprites.on_overlap(SpriteKind.enemy, SpriteKind.player, on_on_overlap)
+
 def attack_left():
     global player_sprite, player_facing_right
     if (player_facing_right):
@@ -1254,9 +1258,9 @@ def set_assassin_base_stats():
     return assassin_data
 
 def select_next_level():
-    global level_selector, selected_level, campaign_levels
+    global level_selector, selected_level, campaign_levels, on_dev_mode
     if selected_level < len(campaign_levels)-1:
-        if campaign_levels[selected_level + 1].level_opened:
+        if campaign_levels[selected_level + 1].level_opened or on_dev_mode:
             selected_level += 1
             new_pos = campaign_levels[selected_level].pos_on_map
             level_selector.set_position(new_pos[0], new_pos[1])
@@ -1399,7 +1403,7 @@ choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
-on_dev_mode = False
+on_dev_mode = True
 
 # Characters
 characters = ["Knight", "Mage", "Assassin"]
