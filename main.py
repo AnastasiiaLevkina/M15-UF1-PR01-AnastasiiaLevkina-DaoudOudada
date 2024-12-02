@@ -760,10 +760,10 @@ def play_level(level: Level):
     player_sprite.set_position(75, 100)
     delay = 0
     for en in level.enemy_appearance_order:
-        enemy_id = en[0]
         delay = delay + en[1]
-        enemy_to_spawn: Enemy_Type1 = enemies_collection[enemy_id-1]
         def on_after2():
+            enemy_id = en[0]
+            enemy_to_spawn: Enemy_Type1 = enemies_collection[enemy_id-1]
             spawn_enemy(enemy_to_spawn)
             launch_enemy_attack(enemy_to_spawn)
         timer.after(delay, on_after2)

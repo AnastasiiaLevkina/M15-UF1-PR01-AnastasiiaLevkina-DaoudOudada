@@ -1159,8 +1159,6 @@ function close_tower_mode() {
 }
 
 function play_level(level: Level) {
-    let enemy_id: number;
-    let enemy_to_spawn: Enemy_Type1;
     
     if (level.level_number == 1) {
         play_cutscene_1()
@@ -1173,10 +1171,10 @@ function play_level(level: Level) {
     player_sprite.setPosition(75, 100)
     let delay = 0
     for (let en of level.enemy_appearance_order) {
-        enemy_id = en[0]
         delay = delay + en[1]
-        enemy_to_spawn = enemies_collection[enemy_id - 1]
         timer.after(delay, function on_after2() {
+            let enemy_id = en[0]
+            let enemy_to_spawn = enemies_collection[enemy_id - 1]
             spawn_enemy(enemy_to_spawn)
             launch_enemy_attack(enemy_to_spawn)
         })
