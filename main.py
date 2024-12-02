@@ -110,9 +110,8 @@ class Enemy_Type1(Enemy): # Enemy that, approaching the player, stops moving and
             self.enemy_sprite.set_velocity((self.speed * -1), 0)
 
         else: # The enemy spawns at the left of the player
-            if not self.facing_right:
-                self.enemy_sprite.image.flip_x()
-                self.facing_right = True
+            self.enemy_sprite.image.flip_x()
+            self.facing_right = True
             self.enemy_sprite.set_velocity(self.speed, 0)
             
 
@@ -760,7 +759,7 @@ def play_level(level: Level):
     create_player()
     player_sprite.set_position(75, 100)
     for en in level.enemy_appearance_order:
-        enemy_to_spawn = enemies_collection[en[0]]
+        enemy_to_spawn: Enemy_Type1 = enemies_collection[3]
         spawn_enemy(enemy_to_spawn)
         launch_enemy_attack(enemy_to_spawn)
     # play idle animation for player
@@ -1266,7 +1265,7 @@ def spawn_enemy(enemy: Enemy):
         enemy_sprite = sprites.create(assets.image("""
             enemy_1_sprite
         """), SpriteKind.enemy)
-    elif enemy.enemy_type == 1:
+    elif enemy.enemy_type == 2:
         enemy_sprite = sprites.create(assets.image("""
             enemy_2_sprite
         """), SpriteKind.enemy)
@@ -1277,8 +1276,6 @@ def spawn_enemy(enemy: Enemy):
 def launch_enemy_attack(enemy: Enemy_Type1):
     global player_sprite
     player_x = player_sprite.x
-
-    pause(enemy.delay)
     enemy.start_moving(player_x)
 
 #Characters
@@ -1402,8 +1399,8 @@ assassin_stats = set_assassin_base_stats()
 enemies_collection = {
     1: Enemy_Type1(1, 100, 10, 20, 150, 100, 10), # ghost coming from right
     2: Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # ghost coming from left
-    3: Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # bat coming from right
-    4: Enemy_Type1(1, 100, 10, 20, 20, 100, 10) # bat coming from left
+    3: Enemy_Type1(2, 100, 10, 20, 150, 100, 10), # bat coming from right
+    4: Enemy_Type1(2, 100, 10, 20, 20, 100, 10) # bat coming from left
 }
 
 # Music 

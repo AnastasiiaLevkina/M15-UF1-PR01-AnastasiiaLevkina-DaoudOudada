@@ -359,11 +359,8 @@ class Enemy_Type1 extends Enemy {
             this.enemy_sprite.setVelocity(this.speed * -1, 0)
         } else {
             //  The enemy spawns at the left of the player
-            if (!this.facing_right) {
-                this.enemy_sprite.image.flipX()
-                this.facing_right = true
-            }
-            
+            this.enemy_sprite.image.flipX()
+            this.facing_right = true
             this.enemy_sprite.setVelocity(this.speed, 0)
         }
         
@@ -1162,7 +1159,7 @@ function close_tower_mode() {
 }
 
 function play_level(level: Level) {
-    let enemy_to_spawn: Enemy;
+    let enemy_to_spawn: Enemy_Type1;
     
     if (level.level_number == 1) {
         play_cutscene_1()
@@ -1174,7 +1171,7 @@ function play_level(level: Level) {
     create_player()
     player_sprite.setPosition(75, 100)
     for (let en of level.enemy_appearance_order) {
-        enemy_to_spawn = enemies_collection[en[0]]
+        enemy_to_spawn = enemies_collection[3]
         spawn_enemy(enemy_to_spawn)
         launch_enemy_attack(enemy_to_spawn)
     }
@@ -1695,7 +1692,7 @@ function spawn_enemy(enemy: Enemy) {
         enemy_sprite = sprites.create(assets.image`
             enemy_1_sprite
         `, SpriteKind.Enemy)
-    } else if (enemy.enemy_type == 1) {
+    } else if (enemy.enemy_type == 2) {
         enemy_sprite = sprites.create(assets.image`
             enemy_2_sprite
         `, SpriteKind.Enemy)
@@ -1708,7 +1705,6 @@ function spawn_enemy(enemy: Enemy) {
 function launch_enemy_attack(enemy: Enemy_Type1) {
     
     let player_x = player_sprite.x
-    pause(enemy.delay)
     enemy.start_moving(player_x)
 }
 
@@ -1817,8 +1813,8 @@ let assassin_stats = set_assassin_base_stats()
 let enemies_collection = {
     1 : new Enemy_Type1(1, 100, 10, 20, 150, 100, 10),
     2 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
-    3 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
-    4 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
+    3 : new Enemy_Type1(2, 100, 10, 20, 150, 100, 10),
+    4 : new Enemy_Type1(2, 100, 10, 20, 20, 100, 10),
 }
 
 //  ghost coming from right
