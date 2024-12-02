@@ -89,6 +89,18 @@ class Enemy():
     def set_sprite(self, sprite):
         self.enemy_sprite = sprite
 
+    def start_moving(self, player_x):
+            if self.enemy_sprite.x > player_x: # The enemy spawns at the right of the player
+                if self.facing_right:
+                    self.enemy_sprite.image.flip_x()
+                    self.facing_right = False
+                self.enemy_sprite.set_velocity((self.speed * -1), 0)
+
+            else: # The enemy spawns at the left of the player
+                self.enemy_sprite.image.flip_x()
+                self.facing_right = True
+                self.enemy_sprite.set_velocity(self.speed, 0)
+
     def recieve_damage(self, damage):
         self.health -= damage
 
@@ -101,18 +113,6 @@ class Enemy_Type1(Enemy): # Enemy that, approaching the player, stops moving and
     def __init__(self, t, hp, dg, sp, x, y, dist):
         super().__init__(t, hp, dg, sp, x, y)
         self.min_distance = dist
-
-    def start_moving(self, player_x):
-        if self.enemy_sprite.x > player_x: # The enemy spawns at the right of the player
-            if self.facing_right:
-                self.enemy_sprite.image.flip_x()
-                self.facing_right = False
-            self.enemy_sprite.set_velocity((self.speed * -1), 0)
-
-        else: # The enemy spawns at the left of the player
-            self.enemy_sprite.image.flip_x()
-            self.facing_right = True
-            self.enemy_sprite.set_velocity(self.speed, 0)
             
 
 class Enemy_Type2(Enemy): # Enemy that passes the player without stopping and dealing damage when approaching
@@ -767,7 +767,7 @@ def play_level(level: Level):
         delay = delay + en[1]
         def on_after2():
             enemy_id = en[0]
-            enemy_to_spawn: Enemy_Type1 = enemies_collection[enemy_id-1]
+            enemy_to_spawn: Enemy = enemies_collection[enemy_id-1]
             spawn_enemy(enemy_to_spawn)
             launch_enemy_attack(enemy_to_spawn)
         timer.after(delay, on_after2)
@@ -1293,7 +1293,7 @@ def spawn_enemy(enemy: Enemy):
     enemy_sprite.set_position(enemy.pos_x, enemy.pos_y)
     enemy.create_sprite(enemy_sprite)
 
-def launch_enemy_attack(enemy: Enemy_Type1):
+def launch_enemy_attack(enemy: Enemy):
     global player_sprite
     player_x = player_sprite.x
     enemy.start_moving(player_x)
@@ -1421,10 +1421,10 @@ assassin_stats = set_assassin_base_stats()
 # conventional x to put enemy on left = 0 ???
 
 enemies_collection = [
-    Enemy_Type1(1, 100, 10, 20, 150, 100, 10), # ghost coming from right
-    Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # ghost coming from left
-    Enemy_Type1(2, 100, 10, 20, 150, 100, 10), # bat coming from right
-    Enemy_Type1(2, 100, 10, 20, 20, 100, 10) # bat coming from left
+    Enemy(1, 100, 10, 20, 150, 100), # ghost coming from right
+    Enemy(1, 100, 10, 20, 20, 100), # ghost coming from left
+    Enemy(2, 100, 10, 20, 150, 100), # bat coming from right
+    Enemy(2, 100, 10, 20, 20, 100) # bat coming from left
 ]
 
 # Music 

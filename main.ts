@@ -246,17 +246,6 @@ class Enemy {
         this.___enemy_sprite = value
     }
     
-    static delay: number
-    private ___delay_is_set: boolean
-    private ___delay: number
-    get delay(): number {
-        return this.___delay_is_set ? this.___delay : Enemy.delay
-    }
-    set delay(value: number) {
-        this.___delay_is_set = true
-        this.___delay = value
-    }
-    
     static facing_right: boolean
     private ___facing_right_is_set: boolean
     private ___facing_right: boolean
@@ -266,6 +255,17 @@ class Enemy {
     set facing_right(value: boolean) {
         this.___facing_right_is_set = true
         this.___facing_right = value
+    }
+    
+    static delay: number
+    private ___delay_is_set: boolean
+    private ___delay: number
+    get delay(): number {
+        return this.___delay_is_set ? this.___delay : Enemy.delay
+    }
+    set delay(value: number) {
+        this.___delay_is_set = true
+        this.___delay = value
     }
     
     public static __initEnemy() {
@@ -314,6 +314,24 @@ class Enemy {
         this.enemy_sprite = sprite
     }
     
+    public start_moving(player_x: number) {
+        if (this.enemy_sprite.x > player_x) {
+            //  The enemy spawns at the right of the player
+            if (this.facing_right) {
+                this.enemy_sprite.image.flipX()
+                this.facing_right = false
+            }
+            
+            this.enemy_sprite.setVelocity(this.speed * -1, 0)
+        } else {
+            //  The enemy spawns at the left of the player
+            this.enemy_sprite.image.flipX()
+            this.facing_right = true
+            this.enemy_sprite.setVelocity(this.speed, 0)
+        }
+        
+    }
+    
     public recieve_damage(damage: any) {
         this.health -= damage
     }
@@ -346,24 +364,6 @@ class Enemy_Type1 extends Enemy {
     constructor(t: number, hp: number, dg: number, sp: number, x: number, y: number, dist: number) {
         super(t, hp, dg, sp, x, y)
         this.min_distance = dist
-    }
-    
-    public start_moving(player_x: number) {
-        if (this.enemy_sprite.x > player_x) {
-            //  The enemy spawns at the right of the player
-            if (this.facing_right) {
-                this.enemy_sprite.image.flipX()
-                this.facing_right = false
-            }
-            
-            this.enemy_sprite.setVelocity(this.speed * -1, 0)
-        } else {
-            //  The enemy spawns at the left of the player
-            this.enemy_sprite.image.flipX()
-            this.facing_right = true
-            this.enemy_sprite.setVelocity(this.speed, 0)
-        }
-        
     }
     
 }
@@ -1718,7 +1718,7 @@ function spawn_enemy(enemy: Enemy) {
     enemy.create_sprite(enemy_sprite)
 }
 
-function launch_enemy_attack(enemy: Enemy_Type1) {
+function launch_enemy_attack(enemy: Enemy) {
     
     let player_x = player_sprite.x
     enemy.start_moving(player_x)
@@ -1826,7 +1826,7 @@ let assassin_stats = set_assassin_base_stats()
 //  player_y = 100
 //  conventional x to put enemy on right = 150
 //  conventional x to put enemy on left = 0 ???
-let enemies_collection = [new Enemy_Type1(1, 100, 10, 20, 150, 100, 10), new Enemy_Type1(1, 100, 10, 20, 20, 100, 10), new Enemy_Type1(2, 100, 10, 20, 150, 100, 10), new Enemy_Type1(2, 100, 10, 20, 20, 100, 10)]
+let enemies_collection = [new Enemy(1, 100, 10, 20, 150, 100), new Enemy(1, 100, 10, 20, 20, 100), new Enemy(2, 100, 10, 20, 150, 100), new Enemy(2, 100, 10, 20, 20, 100)]
 //  ghost coming from right
 //  ghost coming from left
 //  bat coming from right
