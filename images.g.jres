@@ -109,6 +109,11 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "church_bg"
     },
+    "image23": {
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAAwAAAAAAAAAzMwAAAAAAADMzAAAAAAAwAzMAAAAAADAzMwAAAAAAMDADAAAAAAAAiIgAAAAAAICIiAAAAAAAgIiIAAAAAACAiAgAAAAAAICICAAAAAAAgAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "myImage0"
+    },
     "*": {
         "mimeType": "image/x-mkcd-f4",
         "dataEncoding": "base64",

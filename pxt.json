@@ -6,7 +6,8 @@
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
         "arcade-character-animations": "github:microsoft/arcade-character-animations#v0.0.2",
         "sprite-scaling": "*",
-        "animation": "*"
+        "animation": "*",
+        "Timers": "github:microsoft/arcade-timers#v1.1.0"
     },
     "files": [
         "main.blocks",

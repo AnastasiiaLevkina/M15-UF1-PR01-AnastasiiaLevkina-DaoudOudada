@@ -125,7 +125,7 @@ class Enemy_Type2(Enemy): # Enemy that passes the player without stopping and de
 class Level():
     level_number = 0
     # Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
-    enemy_appearance_order = []
+    enemy_appearance_order = [[]]
     level_passed = False
     level_opened = False
     stars = 0
@@ -758,10 +758,15 @@ def play_level(level: Level):
     """))
     create_player()
     player_sprite.set_position(75, 100)
+    delay = 0
     for en in level.enemy_appearance_order:
-        enemy_to_spawn: Enemy_Type1 = enemies_collection[3]
-        spawn_enemy(enemy_to_spawn)
-        launch_enemy_attack(enemy_to_spawn)
+        enemy_id = en[0]
+        delay = delay + en[1]
+        enemy_to_spawn: Enemy_Type1 = enemies_collection[enemy_id-1]
+        def on_after2():
+            spawn_enemy(enemy_to_spawn)
+            launch_enemy_attack(enemy_to_spawn)
+        timer.after(delay, on_after2)
     # play idle animation for player
     playing_level = True
 
@@ -1345,7 +1350,7 @@ continue_button_selected = True
 # Level variables
 campaign_levels = [
     Level( # Level 1
-        1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, True, 0, "game_logo_bg", "", (20, 105), ""
+        1, [[1, 500], [3, 750], [2, 600], [4, 500], [1, 500]], False, True, 0, "game_logo_bg", "", (20, 105), ""
     ), 
     Level( # Level 2
         1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], False, False, 0, "game_logo_bg", "", (59, 95), ""
@@ -1396,12 +1401,12 @@ assassin_stats = set_assassin_base_stats()
 # conventional x to put enemy on right = 150
 # conventional x to put enemy on left = 0 ???
 
-enemies_collection = {
-    1: Enemy_Type1(1, 100, 10, 20, 150, 100, 10), # ghost coming from right
-    2: Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # ghost coming from left
-    3: Enemy_Type1(2, 100, 10, 20, 150, 100, 10), # bat coming from right
-    4: Enemy_Type1(2, 100, 10, 20, 20, 100, 10) # bat coming from left
-}
+enemies_collection = [
+    Enemy_Type1(1, 100, 10, 20, 150, 100, 10), # ghost coming from right
+    Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # ghost coming from left
+    Enemy_Type1(2, 100, 10, 20, 150, 100, 10), # bat coming from right
+    Enemy_Type1(2, 100, 10, 20, 20, 100, 10) # bat coming from left
+]
 
 # Music 
 #music.set_tempo(120)  # Aumentar el tempo

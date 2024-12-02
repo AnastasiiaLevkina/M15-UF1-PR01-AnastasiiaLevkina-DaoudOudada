@@ -408,13 +408,13 @@ class Level {
         this.___level_number = value
     }
     
-    static enemy_appearance_order: any[]
+    static enemy_appearance_order: number[][]
     private ___enemy_appearance_order_is_set: boolean
-    private ___enemy_appearance_order: any[]
-    get enemy_appearance_order(): any[] {
+    private ___enemy_appearance_order: number[][]
+    get enemy_appearance_order(): number[][] {
         return this.___enemy_appearance_order_is_set ? this.___enemy_appearance_order : Level.enemy_appearance_order
     }
-    set enemy_appearance_order(value: any[]) {
+    set enemy_appearance_order(value: number[][]) {
         this.___enemy_appearance_order_is_set = true
         this.___enemy_appearance_order = value
     }
@@ -499,7 +499,7 @@ class Level {
     public static __initLevel() {
         Level.level_number = 0
         //  Enemies of the level are stored in an array of pairs enemyId-delayAfterPrevious
-        Level.enemy_appearance_order = []
+        Level.enemy_appearance_order = [[]]
         Level.level_passed = false
         Level.level_opened = false
         Level.stars = 0
@@ -509,7 +509,7 @@ class Level {
         Level.pos_on_map = []
     }
     
-    constructor(lvl_num: number, enemies: any[], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string, pos: number[], light: string) {
+    constructor(lvl_num: number, enemies: number[][], lvl_passed: boolean, lvl_opened: boolean, stars: number, bg: string, mus: string, pos: number[], light: string) {
         this.level_number = lvl_num
         this.enemy_appearance_order = enemies
         this.level_passed = lvl_passed
@@ -1159,6 +1159,7 @@ function close_tower_mode() {
 }
 
 function play_level(level: Level) {
+    let enemy_id: number;
     let enemy_to_spawn: Enemy_Type1;
     
     if (level.level_number == 1) {
@@ -1170,10 +1171,15 @@ function play_level(level: Level) {
     `)
     create_player()
     player_sprite.setPosition(75, 100)
+    let delay = 0
     for (let en of level.enemy_appearance_order) {
-        enemy_to_spawn = enemies_collection[3]
-        spawn_enemy(enemy_to_spawn)
-        launch_enemy_attack(enemy_to_spawn)
+        enemy_id = en[0]
+        delay = delay + en[1]
+        enemy_to_spawn = enemies_collection[enemy_id - 1]
+        timer.after(delay, function on_after2() {
+            spawn_enemy(enemy_to_spawn)
+            launch_enemy_attack(enemy_to_spawn)
+        })
     }
     //  play idle animation for player
     playing_level = true
@@ -1775,7 +1781,7 @@ let right_arrow_selected = false
 let left_arrow_selected = false
 let continue_button_selected = true
 //  Level variables
-let campaign_levels = [new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, true, 0, "game_logo_bg", "", [20, 105], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15], "")]
+let campaign_levels = [new Level(1, [[1, 500], [3, 750], [2, 600], [4, 500], [1, 500]], false, true, 0, "game_logo_bg", "", [20, 105], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [59, 95], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 75], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [96, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 45], ""), new Level(1, [[1, 100], [1, 50], [1, 0], [1, 0], [1, 100]], false, false, 0, "game_logo_bg", "", [46, 15], "")]
 //  Level 1
 //  Level 2
 //  Level 3
@@ -1810,13 +1816,7 @@ let assassin_stats = set_assassin_base_stats()
 //  player_y = 100
 //  conventional x to put enemy on right = 150
 //  conventional x to put enemy on left = 0 ???
-let enemies_collection = {
-    1 : new Enemy_Type1(1, 100, 10, 20, 150, 100, 10),
-    2 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
-    3 : new Enemy_Type1(2, 100, 10, 20, 150, 100, 10),
-    4 : new Enemy_Type1(2, 100, 10, 20, 20, 100, 10),
-}
-
+let enemies_collection = [new Enemy_Type1(1, 100, 10, 20, 150, 100, 10), new Enemy_Type1(1, 100, 10, 20, 20, 100, 10), new Enemy_Type1(2, 100, 10, 20, 150, 100, 10), new Enemy_Type1(2, 100, 10, 20, 20, 100, 10)]
 //  ghost coming from right
 //  ghost coming from left
 //  bat coming from right
