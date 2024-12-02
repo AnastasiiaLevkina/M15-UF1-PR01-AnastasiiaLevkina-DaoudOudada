@@ -759,9 +759,10 @@ def play_level(level: Level):
     """))
     create_player()
     player_sprite.set_position(75, 100)
-    enemy = enemies_collection[1]
-    spawn_enemy(enemy)
-    launch_enemy_attack(enemy)
+    for en in level.enemy_appearance_order:
+        enemy_to_spawn = enemies_collection[en[0]]
+        spawn_enemy(enemy_to_spawn)
+        launch_enemy_attack(enemy_to_spawn)
     # play idle animation for player
     playing_level = True
 
@@ -1401,7 +1402,8 @@ assassin_stats = set_assassin_base_stats()
 enemies_collection = {
     1: Enemy_Type1(1, 100, 10, 20, 150, 100, 10), # ghost coming from right
     2: Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # ghost coming from left
-    3: Enemy_Type1(1, 100, 10, 20, 20, 100, 10) # bat coming from right
+    3: Enemy_Type1(1, 100, 10, 20, 20, 100, 10), # bat coming from right
+    4: Enemy_Type1(1, 100, 10, 20, 20, 100, 10) # bat coming from left
 }
 
 # Music 

@@ -1162,6 +1162,7 @@ function close_tower_mode() {
 }
 
 function play_level(level: Level) {
+    let enemy_to_spawn: Enemy;
     
     if (level.level_number == 1) {
         play_cutscene_1()
@@ -1172,9 +1173,11 @@ function play_level(level: Level) {
     `)
     create_player()
     player_sprite.setPosition(75, 100)
-    let enemy = enemies_collection[1]
-    spawn_enemy(enemy)
-    launch_enemy_attack(enemy)
+    for (let en of level.enemy_appearance_order) {
+        enemy_to_spawn = enemies_collection[en[0]]
+        spawn_enemy(enemy_to_spawn)
+        launch_enemy_attack(enemy_to_spawn)
+    }
     //  play idle animation for player
     playing_level = true
 }
@@ -1815,11 +1818,13 @@ let enemies_collection = {
     1 : new Enemy_Type1(1, 100, 10, 20, 150, 100, 10),
     2 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
     3 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
+    4 : new Enemy_Type1(1, 100, 10, 20, 20, 100, 10),
 }
 
 //  ghost coming from right
 //  ghost coming from left
 //  bat coming from right
+//  bat coming from left
 //  Music 
 // music.set_tempo(120)  # Aumentar el tempo
 // music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))
