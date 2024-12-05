@@ -527,9 +527,13 @@ Level.__initLevel()
 
 // Controls
 controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
+    
     if (on_main_screen == true) {
         close_main_screen()
         open_choose_mode()
+    } else if (on_settings_menu) {
+        on_dev_mode = !on_dev_mode
+        create_dev_mode_switch()
     } else if (on_choose_mode == true) {
         close_choose_mode()
         if (choose_campaign_mode) {
@@ -576,14 +580,15 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
     
+    
     if (on_choose_mode) {
         set_cursor_facing_right()
     } else if (playing_level) {
         attack_right()
     } else if (on_level_map_screen == true) {
         select_next_level()
-    } else {
-        
+    } else if (player_stats_menu_opened) {
+        change_selected_character()
     }
     
 })
@@ -595,11 +600,33 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed(
         attack_left()
     } else if (on_level_map_screen == true) {
         select_previuous_level()
-    } else {
-        
+    } else if (player_stats_menu_opened) {
+        change_selected_character()
     }
     
 })
+function shoot_left() {
+    let projectile = sprites.createProjectileFromSprite(img`
+        . . 4 4 . .
+        . 4 4 4 4 .
+        4 4 4 4 4 4
+        . 4 4 4 4 .
+        . . 4 4 . .
+    `, player_sprite, -100, 0)
+}
+
+//  Velocidad negativa en X para ir a la izquierda
+function shoot_right() {
+    let projectile = sprites.createProjectileFromSprite(img`
+        . . 4 4 . .
+        . 4 4 4 4 .
+        4 4 4 4 4 4
+        . 4 4 4 4 .
+        . . 4 4 . .
+    `, player_sprite, 100, 0)
+}
+
+//  Velocidad positiva en X para ir a la derecha
 controller.up.onEvent(ControllerButtonEvent.Pressed, function on_up_pressed() {
     if (on_level_map_screen == true) {
         select_next_level()
@@ -612,9 +639,23 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed(
     }
     
 })
-sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
+function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
     sprite.setVelocity(0, 0)
-})
+}
+
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, on_on_overlap)
+function on_on_overlap1(sprite: any, otherSprite: any) {
+    
+    player.hp -= 10
+}
+
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, on_on_overlap)
+function on_on_overlap2(sprite: any, otherSprite: any) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite)
+}
+
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, on_on_overlap)
 function attack_left() {
     
     if (player_facing_right) {
@@ -622,6 +663,7 @@ function attack_left() {
         player_facing_right = false
     }
     
+    shoot_left()
 }
 
 //  Play attack animation
@@ -632,6 +674,7 @@ function attack_right() {
         player_facing_right = true
     }
     
+    shoot_right()
 }
 
 //  Play attack animation
@@ -863,7 +906,7 @@ function open_level_map() {
     let lvl_num: TextSprite;
     
     scene.setBackgroundImage(assets.image`
-            level_map_bg
+            myImage2
         `)
     let level_num = 0
     for (let lvl of campaign_levels) {
@@ -1019,12 +1062,15 @@ function open_settings_menu() {
             8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
         `)
     exit_icon()
+    create_dev_mode_switch()
     on_settings_menu = true
 }
 
 function close_settings_menu() {
     
     destroy_exit_icon()
+    sprites.destroyAllSpritesOfKind(SpriteKind.Text)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Asset)
     on_settings_menu = false
 }
 
@@ -1168,7 +1214,7 @@ function play_level(level: Level) {
     }
     
     scene.setBackgroundImage(assets.image`
-        game_logo_bg
+        moon
     `)
     create_player()
     player_sprite.setPosition(75, 100)
@@ -1218,6 +1264,19 @@ function create_stats_menu_sprites() {
 
 function create_dev_mode_switch() {
     
+    let text = textsprite.create("DEV Mode")
+    text.setPosition(75, 20)
+    if (on_dev_mode) {
+        dev_mode_switch_sprite = sprites.create(assets.image`
+                switch_mode_on
+        `, SpriteKind.Asset)
+    } else {
+        dev_mode_switch_sprite = sprites.create(assets.image`
+                switch_mode_off
+        `, SpriteKind.Asset)
+    }
+    
+    dev_mode_switch_sprite.setPosition(75, 50)
 }
 
 function exit_icon() {
@@ -1280,8 +1339,8 @@ function settings_icon() {
 
 function game_title() {
     
-    title_sprite = textsprite.create("My Game")
-    title_sprite.setMaxFontHeight(15)
+    title_sprite = textsprite.create("Terror Tower")
+    title_sprite.setMaxFontHeight(12)
     title_sprite.setOutline(1, 15)
     title_sprite.setPosition(82, 43)
 }
@@ -1562,6 +1621,7 @@ function select_right_arrow() {
     right_arrow.setImage(assets.image`
             right_arrow_selected
             `)
+    right_arrow_selected = true
 }
 
 function deselect_right_arrow() {
@@ -1569,20 +1629,23 @@ function deselect_right_arrow() {
     right_arrow.setImage(assets.image`
             right_select_arrow
                 `)
+    right_arrow_selected = false
 }
 
 function select_left_arrow() {
     
-    right_arrow.setImage(assets.image`
+    left_arrow.setImage(assets.image`
             right_arrow_selected
             `)
+    left_arrow_selected = true
 }
 
 function deselect_left_arrow() {
     
-    right_arrow.setImage(assets.image`
+    left_arrow.setImage(assets.image`
             right_select_arrow
                 `)
+    left_arrow_selected = true
 }
 
 function select_continue_button() {
@@ -1590,6 +1653,7 @@ function select_continue_button() {
     continue_button.setImage(assets.image`
             right_select_arrow
                     `)
+    continue_button_selected = true
 }
 
 function deselect_continue_button() {
@@ -1597,6 +1661,7 @@ function deselect_continue_button() {
     continue_button.setImage(assets.image`
             right_select_arrow
                     `)
+    continue_button_selected = false
 }
 
 function confirm_before_proceeding(msg: string) {
@@ -1767,6 +1832,12 @@ function create_mage_sprite() {
     `, SpriteKind.Player)
 }
 
+function change_selected_character() {
+    
+    selected_character = (selected_character + 1) % 3
+    create_player()
+}
+
 //  main
 //  Sprites
 let player_sprite : Sprite = null
@@ -1782,7 +1853,7 @@ let text_sprite : TextSprite = null
 let cursor : Sprite = null
 let mode_b : Sprite = null
 let mode_a : Sprite = null
-let dev_mode_switch : Sprite = null
+let dev_mode_switch_sprite : Sprite = null
 // # Player stats menu assets
 let right_arrow : Sprite = null
 let left_arrow : Sprite = null
@@ -1813,7 +1884,7 @@ let choose_tower_mode = false
 let on_level_map_screen = false
 let on_level_screen = false
 let player_stats_menu_opened = false
-let on_dev_mode = true
+let on_dev_mode = false
 //  Characters
 let characters = ["Knight", "Mage", "Assassin"]
 let character_name = ""
@@ -1831,15 +1902,6 @@ let enemies_collection = [new Enemy(1, 100, 10, 20, 150, 100), new Enemy(1, 100,
 //  ghost coming from left
 //  bat coming from right
 //  bat coming from left
-//  Music 
-// music.set_tempo(120)  # Aumentar el tempo
-// music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))
-//  Variación en la melodía para más dinamismo
-// music.play_melody("C3 E3 G3 F3 E3 C3 A2 G2", 120)
-// music.play_melody("D3 F3 A3 G3 F3 D3 B2 A2", 120)
-// music.play_melody("C3 G3 E3 F3 D3 C3 A2 G2", 120)  # Cambio en el patrón para mayor dinamismo
-// music.play_melody("F3 G3 A3 F3 G3 C3 A2", 100)  # Cambio en las notas para una sensación más energética
-// music.play_melody("C3 E3 G3 F3 E3 D3 C3 B2", 100)  # Mantener el ritmo pero variando un poco
 //  Player
 let player = set_knight_base_stats()
 //  On start

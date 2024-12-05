@@ -148,9 +148,13 @@ class Level():
 
 #Controls
 def on_a_pressed():
+    global on_dev_mode
     if on_main_screen == True:
         close_main_screen()
-        open_choose_mode()        
+        open_choose_mode() 
+    elif on_settings_menu:
+        on_dev_mode = not on_dev_mode
+        create_dev_mode_switch()   
     elif on_choose_mode == True:
         close_choose_mode()
         if choose_campaign_mode:
@@ -188,28 +192,47 @@ def on_b_pressed():
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
 def on_right_pressed():
-    global on_choose_mode, on_level_map_screen
+    global on_choose_mode, on_level_map_screen, player_stats_menu_opened, playing_level
+    global right_arrow_selected, left_arrow_selected, continue_button_selected
     if on_choose_mode:
         set_cursor_facing_right()
     elif playing_level:
         attack_right()
     elif on_level_map_screen == True:
         select_next_level()
-    else:
-        pass
+    elif player_stats_menu_opened:
+        change_selected_character()
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
 def on_left_pressed():
-    global on_choose_mode, on_level_map_screen
+    global on_choose_mode, on_level_map_screen, playing_level
     if on_choose_mode:
         set_cursor_facing_left()
     elif playing_level:
         attack_left()
     elif on_level_map_screen == True: 
         select_previuous_level()
-    else:
-        pass
+    elif player_stats_menu_opened:
+        change_selected_character()
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
+
+def shoot_left():
+    projectile = sprites.create_projectile_from_sprite(img("""
+        . . 4 4 . .
+        . 4 4 4 4 .
+        4 4 4 4 4 4
+        . 4 4 4 4 .
+        . . 4 4 . .
+    """), player_sprite, -100, 0)  # Velocidad negativa en X para ir a la izquierda
+
+def shoot_right():
+    projectile = sprites.create_projectile_from_sprite(img("""
+        . . 4 4 . .
+        . 4 4 4 4 .
+        4 4 4 4 4 4
+        . 4 4 4 4 .
+        . . 4 4 . .
+    """), player_sprite, 100, 0)  # Velocidad positiva en X para ir a la derecha
 
 def on_up_pressed():
     if on_level_map_screen == True: 
@@ -225,11 +248,22 @@ def on_on_overlap(sprite, otherSprite):
     sprite.set_velocity(0, 0)
 sprites.on_overlap(SpriteKind.enemy, SpriteKind.player, on_on_overlap)
 
+def on_on_overlap1(sprite, otherSprite):
+    global player
+    player.hp -= 10
+sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap)
+
+def on_on_overlap2(sprite, otherSprite):
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite)
+sprites.on_overlap(SpriteKind.projectile, SpriteKind.enemy, on_on_overlap)
+
 def attack_left():
     global player_sprite, player_facing_right
     if (player_facing_right):
         player_sprite.image.flip_x()
         player_facing_right = False
+    shoot_left()
     # Play attack animation
 
 def attack_right():
@@ -237,6 +271,7 @@ def attack_right():
     if not (player_facing_right):
             player_sprite.image.flip_x()
             player_facing_right = True
+    shoot_right()
     # Play attack animation
 
 #Screens
@@ -463,7 +498,7 @@ def close_choose_mode():
 def open_level_map():
     global on_level_map_screen
     scene.set_background_image(assets.image("""
-            level_map_bg
+            myImage2
         """))
     level_num = 0
     for lvl in campaign_levels:
@@ -613,12 +648,14 @@ def open_settings_menu():
             8888888888885555588888888888885888888888888888858885888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888588888588855588888
         """))
         exit_icon()
-
+        create_dev_mode_switch()
         on_settings_menu = True
 
 def close_settings_menu():
-    global on_settings_menu
+    global on_settings_menu, dev_mode_switch_sprite
     destroy_exit_icon()
+    sprites.destroy_all_sprites_of_kind(SpriteKind.text)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Asset)
     on_settings_menu = False
 
 def open_tower_mode():
@@ -758,7 +795,7 @@ def play_level(level: Level):
     if level.level_number == 1:
         play_cutscene_1()
     scene.set_background_image(assets.image("""
-        game_logo_bg
+        moon
     """))
     create_player()
     player_sprite.set_position(75, 100)
@@ -806,7 +843,18 @@ def create_stats_menu_sprites():
     continue_text.z = 6
 
 def create_dev_mode_switch():
-    global dev_mode_switch
+    global on_dev_mode, dev_mode_switch_sprite
+    text = textsprite.create("DEV Mode")
+    text.set_position(75, 20)
+    if on_dev_mode:
+        dev_mode_switch_sprite = sprites.create(assets.image("""
+                switch_mode_on
+        """), SpriteKind.Asset)
+    else:
+        dev_mode_switch_sprite = sprites.create(assets.image("""
+                switch_mode_off
+        """), SpriteKind.Asset)
+    dev_mode_switch_sprite.set_position(75, 50)
 
 def exit_icon():
     global exit_sprite, letter_b_exit_icon
@@ -869,8 +917,8 @@ def settings_icon():
 
 def game_title():
     global title_sprite
-    title_sprite = textsprite.create("My Game")
-    title_sprite.set_max_font_height(15)
+    title_sprite = textsprite.create("Terror Tower")
+    title_sprite.set_max_font_height(12)
     title_sprite.set_outline(1, 15)
     title_sprite.set_position(82, 43)
 
@@ -1164,36 +1212,42 @@ def select_right_arrow():
     right_arrow.set_image(assets.image("""
             right_arrow_selected
             """))
+    right_arrow_selected = True
 
 def deselect_right_arrow():
     global right_arrow, right_arrow_selected
     right_arrow.set_image(assets.image("""
             right_select_arrow
                 """))
+    right_arrow_selected = False
 
 def select_left_arrow():
-    global right_arrow, right_arrow_selected
-    right_arrow.set_image(assets.image("""
+    global left_arrow, left_arrow_selected
+    left_arrow.set_image(assets.image("""
             right_arrow_selected
             """))
+    left_arrow_selected = True
 
 def deselect_left_arrow():
-    global right_arrow, right_arrow_selected
-    right_arrow.set_image(assets.image("""
+    global left_arrow, left_arrow_selected
+    left_arrow.set_image(assets.image("""
             right_select_arrow
                 """))
+    left_arrow_selected = True
 
 def select_continue_button():
     global continue_button, continue_button_selected
     continue_button.set_image(assets.image("""
             right_select_arrow
                     """))
+    continue_button_selected = True
 
 def deselect_continue_button():
     global continue_button, continue_button_selected
     continue_button.set_image(assets.image("""
             right_select_arrow
                     """))
+    continue_button_selected = False
 
 def confirm_before_proceeding(msg: str):
     game.splash(msg)
@@ -1336,6 +1390,11 @@ def create_mage_sprite():
         mage_sprite
     """), SpriteKind.player)
 
+def change_selected_character():
+    global selected_character
+    selected_character = (selected_character+1)%3
+    create_player()
+
 # main
 # Sprites
 player_sprite: Sprite = None
@@ -1351,7 +1410,7 @@ text_sprite: TextSprite = None
 cursor: Sprite = None
 mode_b: Sprite = None
 mode_a: Sprite = None
-dev_mode_switch: Sprite = None
+dev_mode_switch_sprite: Sprite = None
 
 ## Player stats menu assets
 right_arrow: Sprite = None
@@ -1403,7 +1462,7 @@ choose_tower_mode = False
 on_level_map_screen = False
 on_level_screen = False
 player_stats_menu_opened = False
-on_dev_mode = True
+on_dev_mode = False
 
 # Characters
 characters = ["Knight", "Mage", "Assassin"]
@@ -1426,16 +1485,6 @@ enemies_collection = [
     Enemy(2, 100, 10, 20, 150, 100), # bat coming from right
     Enemy(2, 100, 10, 20, 20, 100) # bat coming from left
 ]
-
-# Music 
-#music.set_tempo(120)  # Aumentar el tempo
-#music.randomize_sound(music.create_sound_effect(WaveShape.SQUARE, 3000, 0, 255, 0, 300, SoundExpressionEffect.NONE, InterpolationCurve.LINEAR))
-# Variación en la melodía para más dinamismo
-#music.play_melody("C3 E3 G3 F3 E3 C3 A2 G2", 120)
-#music.play_melody("D3 F3 A3 G3 F3 D3 B2 A2", 120)
-#music.play_melody("C3 G3 E3 F3 D3 C3 A2 G2", 120)  # Cambio en el patrón para mayor dinamismo
-#music.play_melody("F3 G3 A3 F3 G3 C3 A2", 100)  # Cambio en las notas para una sensación más energética
-#music.play_melody("C3 E3 G3 F3 E3 D3 C3 B2", 100)  # Mantener el ritmo pero variando un poco
 
 # Player
 player = set_knight_base_stats()
