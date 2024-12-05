@@ -245,18 +245,9 @@ def on_down_pressed():
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def on_on_overlap(sprite, otherSprite):
-    sprite.set_velocity(0, 0)
-sprites.on_overlap(SpriteKind.enemy, SpriteKind.player, on_on_overlap)
-
-def on_on_overlap1(sprite, otherSprite):
-    global player
-    player.hp -= 10
-sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap)
-
-def on_on_overlap2(sprite, otherSprite):
     sprites.destroy(sprite)
     sprites.destroy(otherSprite)
-sprites.on_overlap(SpriteKind.projectile, SpriteKind.enemy, on_on_overlap)
+sprites.on_overlap(SpriteKind.enemy, SpriteKind.projectile, on_on_overlap)
 
 def attack_left():
     global player_sprite, player_facing_right
@@ -1393,7 +1384,7 @@ def create_mage_sprite():
 def change_selected_character():
     global selected_character
     selected_character = (selected_character+1)%3
-    create_player()
+    #screate_player()
 
 # main
 # Sprites
@@ -1467,7 +1458,7 @@ on_dev_mode = False
 # Characters
 characters = ["Knight", "Mage", "Assassin"]
 character_name = ""
-selected_character = 0
+selected_character = 1
 knight_stats = set_knight_base_stats()
 mage_stats = set_mage_base_stats()
 assassin_stats = set_assassin_base_stats()

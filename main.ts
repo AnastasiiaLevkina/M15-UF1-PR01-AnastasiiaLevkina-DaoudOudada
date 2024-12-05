@@ -639,23 +639,10 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed(
     }
     
 })
-function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
-    sprite.setVelocity(0, 0)
-}
-
-sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, on_on_overlap)
-function on_on_overlap1(sprite: any, otherSprite: any) {
-    
-    player.hp -= 10
-}
-
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, on_on_overlap)
-function on_on_overlap2(sprite: any, otherSprite: any) {
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
     sprites.destroy(sprite)
     sprites.destroy(otherSprite)
-}
-
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, on_on_overlap)
+})
 function attack_left() {
     
     if (player_facing_right) {
@@ -1835,9 +1822,9 @@ function create_mage_sprite() {
 function change_selected_character() {
     
     selected_character = (selected_character + 1) % 3
-    create_player()
 }
 
+// screate_player()
 //  main
 //  Sprites
 let player_sprite : Sprite = null
@@ -1888,7 +1875,7 @@ let on_dev_mode = false
 //  Characters
 let characters = ["Knight", "Mage", "Assassin"]
 let character_name = ""
-let selected_character = 0
+let selected_character = 1
 let knight_stats = set_knight_base_stats()
 let mage_stats = set_mage_base_stats()
 let assassin_stats = set_assassin_base_stats()
